@@ -43,6 +43,11 @@ class Vector2 {
       this.y = limit;
     }
   }
+  rotate (amount) {
+        var ca = Math.cos(radians);
+        var sa = Math.sin(radians);
+        return new Vector(ca*this.x - sa*this.y, sa*this.x + ca*this.y);
+  }
   static lerp (a, b, t) {
     var x = a.x + t * (b.x - a.x);
     var y = a.y + t * (b.y - a.y);
