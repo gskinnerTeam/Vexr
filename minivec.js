@@ -7,12 +7,12 @@ class Vector2 {
     return Math.sqrt(Vector2.dot(this, this));
   }
   normalize () {
-    var m = this.magnitude();
-    if(m == 0.0) {
-      return new Vector2(0,0);
+    var m = 1/this.magnitude();
+    if(m == Infinity) {
+      m = 0;
     }
-    this.x = this.x/m;
-    this.y = this.y/m;
+    this.x = this.x * m;
+    this.y = this.y * m;
   }
   multiply(scaler) {
     this.x = this.x * scaler;
@@ -49,11 +49,11 @@ class Vector2 {
     return new Vector2(x,y); 
   }
   static normalize (a) {
-    var m = a.magnitude();
-    if(m == 0.0) {
-      return new Vector2(0,0);
+    var m = 1/a.magnitude();
+    if(m == Infinity) {
+      m = 0;
     }
-    return new Vector2(a.x/m, a.y/m);
+    return new Vector2(a.x * m, a.y * m);
   }
   increase(amount) {
     this.x = this.x + amount;
@@ -119,6 +119,6 @@ class Attractor {
     this.location = new Vector2(x,y);
   }
   attract(m) {
-    
+    // not implemented
   }
 }
