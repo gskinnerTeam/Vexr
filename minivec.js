@@ -6,6 +6,14 @@ class Vector2 {
   magnitude () {
     return Math.sqrt(Vector2.dot(this, this));
   }
+  bipolarMag () {
+    var mag = this.magnitude();
+    if(this.x + this.y > 0) {
+        return mag - 1;
+    } else {
+      return mag*-1 + 1;
+    }
+  }
   normalize () {
     var m = 1/this.magnitude();
     if(m == Infinity) {
@@ -44,9 +52,13 @@ class Vector2 {
     }
   }
   rotate (amount) {
-        var ca = Math.cos(radians);
-        var sa = Math.sin(radians);
-        return new Vector(ca*this.x - sa*this.y, sa*this.x + ca*this.y);
+        var cosineAngle = Math.cos(amount);
+        var sineAngle   = Math.sin(amount);
+        this.x = cosineAngle*this.x - sineAngle*this.y;
+        this.y = sineAngle*this.y + cosineAngle*this.y;
+  } 
+  static angleBetween(a, b) {
+
   }
   static lerp (a, b, t) {
     var x = a.x + t * (b.x - a.x);
