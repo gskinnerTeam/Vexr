@@ -6,6 +6,14 @@ class Vector2 {
   magnitude () {
     return Math.sqrt(Vector2.dot(this, this));
   }
+  bipolarMag () {
+    var mag = this.magnitude();
+    if(this.x + this.y > 0) {
+        return mag - 1;
+    } else {
+      return mag*-1 + 1;
+    }
+  }
   normalize () {
     var m = 1/this.magnitude();
     if(m == Infinity) {
@@ -28,8 +36,8 @@ class Vector2 {
     this.add(m);
   }
   divide(scaler) {
-    this.x = this.x / scaler;
-    this.y = this.y / scaler;
+    scaler = 1/scaler;
+    this.multiply(scaler)
   }
   negate() {
     this.x = -this.x;
@@ -43,10 +51,22 @@ class Vector2 {
       this.y = limit;
     }
   }
-  rotate (amount) {
-        var ca = Math.cos(radians);
-        var sa = Math.sin(radians);
-        return new Vector(ca*this.x - sa*this.y, sa*this.x + ca*this.y);
+  rotate (degrees) {
+        var rads = Vector2.degreesToRadians(degrees);
+        var cosineAngle = Math.cos(rads);
+        var sineAngle   = Math.sin(rads);
+        console.log(cosineAngle, sineAngle)
+        this.x = cosineAngle*this.x - sineAngle*this.y;
+        this.y = sineAngle*this.x + cosineAngle*this.y;
+  } 
+  static radiansToDegrees(radians) {
+    return radians * (180 / Math.PI);
+  }
+  static degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
+  }
+  static angleBetween(a, b) {
+      return Math.atan2(b.y - a.y, b.x - a.x);
   }
   static lerp (a, b, t) {
     var x = a.x + t * (b.x - a.x);
@@ -80,7 +100,8 @@ class Vector2 {
     return new Vector2((a.x * scaler),(a.y * scaler));   
   }  
   static divide (a, scaler) {
-    return new Vector2((a.x / scaler),(a.y / scaler));   
+    scaler = 1/scaler;
+    return multiply(a, scaler);
   }  
   static dot (a, b) {
      return a.x * b.x + a.y * b.y;
