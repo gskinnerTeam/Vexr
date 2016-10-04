@@ -46,16 +46,26 @@ class Vector2 {
   clamp (limit) {
     if (this.x > limit) {
       this.x = limit;
+    } else if ( this.x < 0 && this.x < limit) {
+      this.x = -limit;
     }
     if (this.y > limit) {
       this.y = limit;
+    }else if (this.y < 0 && this.y < limit) {
+      this.y = -limit;
+    }
+  }
+  limit (limit) {
+    var magnitude = this.magnitude();
+    if(magnitude > limit) {
+      this.normalize();
+      this.multiply(limit);
     }
   }
   rotate (degrees) {
         var rads = Vector2.degreesToRadians(degrees);
         var cosineAngle = Math.cos(rads);
         var sineAngle   = Math.sin(rads);
-        console.log(cosineAngle, sineAngle)
         this.x = cosineAngle*this.x - sineAngle*this.y;
         this.y = sineAngle*this.x + cosineAngle*this.y;
   } 
@@ -122,6 +132,7 @@ class Vector2 {
 
 class Mover {
   constructor(x,y) {
+      this.angle = 0;
       this.location = new Vector2(x,y);
       this.acceleration = new Vector2(0,0);
       this.velocity = new Vector2(0,0);
@@ -136,6 +147,23 @@ class Mover {
     this.velocity.add(this.acceleration);
     this.location.add(this.velocity);
     this.acceleration.set(0,0);
+  }
+}
+
+class Vehicle extends Mover {
+  constructor(x,y) {
+      super(x,y);
+      this.maxSpeed = 10;
+      this.maxForce = 0.25;
+  } 
+  seek(target) {
+    var desired = Vector2.subtract(target, this.location);
+        desired.normalize();
+        desired.multiply(this.maxSpeed);
+    var steer = Vector2.subtract(desired, this.velocity);
+        steer.limit(this.maxForce);
+    this.applyForce(steer);
+    this.angle = Vector2.radiansToDegrees(Vector2.angleBetween(steer, this.velocity));
   }
 }
 
