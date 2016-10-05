@@ -15,12 +15,10 @@ class Vector2 {
     }
   }
   normalize () {
-    var m = 1/this.magnitude();
-    if(m == Infinity) {
-      m = 0;
-    }
-    this.x = this.x * m;
-    this.y = this.y * m;
+    var m = this.magnitude();
+    if(m > 0) {
+      this.divide(m);
+    } 
   }
   multiply(scaler) {
     this.x = this.x * scaler;
@@ -56,8 +54,7 @@ class Vector2 {
     }
   }
   limit (limit) {
-    var magnitude = this.magnitude();
-    if(magnitude > limit) {
+    if(this.magnitude() > limit) {
       this.normalize();
       this.multiply(limit);
     }
@@ -83,12 +80,9 @@ class Vector2 {
     var y = a.y + t * (b.y - a.y);
     return new Vector2(x,y); 
   }
-  static normalize (a) {
-    var m = 1/a.magnitude();
-    if(m == Infinity) {
-      m = 0;
-    }
-    return new Vector2(a.x * m, a.y * m);
+  static normalize (vector) {
+    var vec = vector.get();
+    return vec.normalize();
   }
   increase(amount) {
     this.x = this.x + amount;
@@ -97,6 +91,9 @@ class Vector2 {
     decrease(amount) {
     this.x = this.x - amount;
     this.y = this.y -amount;
+  }
+  static map (value, bottomA, topA, bottomB, topB){
+    return bottomB + (topB - bottomB) * (value - bottomA) / (topA - bottomA);
   }
   static add (a, b) {
     return new Vector2((a.x + b.x),(a.y + b.y));   
@@ -107,7 +104,7 @@ class Vector2 {
     return Vector2.add(a, n);  
   }
   static multiply (a, scaler) {
-    return new Vector2((a.x * scaler),(a.y * scaler));   
+    return new Vector2(a.x * scaler,a.y * scaler);   
   }  
   static divide (a, scaler) {
     scaler = 1/scaler;
@@ -137,6 +134,7 @@ class Mover {
       this.acceleration = new Vector2(0,0);
       this.velocity = new Vector2(0,0);
       this.mass = 5;
+      this.maxSpeed = 10;
   } 
   applyForce(force) {
     var f = force.get(); 
@@ -145,8 +143,9 @@ class Mover {
   }
   update () {
     this.velocity.add(this.acceleration);
+    this.velocity.limit(this.maxSpeed);
     this.location.add(this.velocity);
-    this.acceleration.set(0,0);
+    this.acceleration.multiply(0);
   }
 }
 
@@ -154,7 +153,7 @@ class Vehicle extends Mover {
   constructor(x,y) {
       super(x,y);
       this.maxSpeed = 10;
-      this.maxForce = 0.25;
+      this.maxForce = 0.1;
   } 
   seek(target) {
     var desired = Vector2.subtract(target, this.location);
@@ -164,6 +163,23 @@ class Vehicle extends Mover {
         steer.limit(this.maxForce);
     this.applyForce(steer);
     this.angle = Vector2.radiansToDegrees(Vector2.angleBetween(steer, this.velocity));
+  }
+  arrive(target) {
+    
+    var desired = Vector2.subtract(target, this.location);
+    var dMag = desired.magnitude();
+        desired.normalize();
+    var mappedPower = Vector2.map(dMag,0,30,0,this.maxSpeed);
+
+        desired.multiply(mappedPower);
+    
+    var steer = Vector2.subtract(desired, this.velocity);
+        steer.limit(this.maxForce);
+    this.applyForce(steer);
+    this.angle = Vector2.radiansToDegrees(Vector2.angleBetween(steer, this.velocity));
+  }
+  avoid(target) {
+    // not implemented
   }
 }
 
