@@ -164,12 +164,12 @@ class Vehicle extends Mover {
     this.applyForce(steer);
     this.angle = Vector2.radiansToDegrees(Vector2.angleBetween(steer, this.velocity));
   }
-  arrive(target) {
+  arrive(target, power = 50) {
     
     var desired = Vector2.subtract(target, this.location);
     var dMag = desired.magnitude();
         desired.normalize();
-    var mappedPower = Vector2.map(dMag,0,30,0,this.maxSpeed);
+    var mappedPower = Vector2.map(dMag,0,power,0,this.maxSpeed);
 
         desired.multiply(mappedPower);
     
