@@ -6,14 +6,6 @@ class Vector2 {
   magnitude () {
     return Math.sqrt(Vector2.dot(this, this));
   }
-  bipolarMag () {
-    var mag = this.magnitude();
-    if(this.x + this.y > 0) {
-        return mag - 1;
-    } else {
-      return mag*-1 + 1;
-    }
-  }
   normalize () {
     var m = this.magnitude();
     if(m > 0) {
