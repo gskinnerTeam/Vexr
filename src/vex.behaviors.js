@@ -1,4 +1,4 @@
-import Vector2 from "vex";
+import { Vector2 } from "vex";
 
 class Behavior {
 	static seek(actor, targetPosition) {
@@ -22,9 +22,6 @@ class Behavior {
 		steer.limit(actor.maxForce);
 
 		return steer;
-	}
-	static avoid(actor, target, avoidRadius) {
-		this.avoidAll([target], avoidRadius);
 	}
 	static avoidAll(actor, obstacles, avoidRadius) {
 		var avoidRadius = 80 || avoidRadius;
@@ -53,6 +50,9 @@ class Behavior {
 		} else {
 			return new Vector2(0,0);
 		}
+	}
+	static avoid(actor, target, avoidRadius) {
+		this.avoidAll(actor, [target], avoidRadius);
 	}
 	static constrain(actor, width, height) {
 		if(actor.location.x < 0) {
@@ -89,16 +89,17 @@ class Actor {
 		this.angle = 0;
 		this.maxSpeed = 15;
 		this.maxForce = 1;
-		this.parent = document.getElementById("game");
+		this.parent = null;
+	}
+	addToParent(parentElement) {
+		this.parent = parentElement;
 		this.parent.appendChild(this.element);
 	}
 	render () {
 		this.element.style.transform =
 			`translateX(${this.location.x}px) translateY(${this.location.y}px) rotate(${this.angle}deg)`;
 	}
-	update () {
-		console.log("i'm just a humble game object, with nothing to do.");
-	}
+	update () {}
 	destroy () {
 		this.dead = true;
 		this.element.remove();
