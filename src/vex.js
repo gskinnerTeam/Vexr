@@ -43,7 +43,7 @@ export default class Vector2 {
 
 	static divide(a, scalar) {
 		scalar = 1 / scalar;
-		return multiply(a, scalar);
+		return Vector2.multiply(a, scalar);
 	}
 
 	static dot(a, b) {
