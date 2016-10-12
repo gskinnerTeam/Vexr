@@ -1,4 +1,4 @@
-import Vector2 from "vex";
+import Vector2 from "./vex";
 
 class Behavior {
 	static seek(actor, targetPosition) {
