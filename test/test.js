@@ -1,6 +1,5 @@
-var assert = require('assert');
-var vex = require('../build/vex');
-var Vector2 = vex.default;
+// karma puts the Vex global module in the test environment.
+var Vector2 = Vex.Vector2;
 
 describe('Vector2 Methods', function() {
 
@@ -116,8 +115,7 @@ describe('New Vector2()', function() {
 			for(var i = 0; i < 1000; i++) {
 				var vec = new Vector2(50 - (Math.random() * 1000), 50 - (Math.random() * 1000));
 				vec.normalize();
-				assert.equal(true, Math.abs(vec.magnitude() - 1) <= 2.220446049250313e-16
-				);
+				assert.equal(true, Math.abs(vec.magnitude() - 1) <= 2.220446049250313e-16);
 			}
 		});
 

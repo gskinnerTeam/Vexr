@@ -1,4 +1,4 @@
-export default class Vector2 {
+class Vector2 {
 
 	static angleBetween(a, b) {
 		return Math.atan2(b.y - a.y, b.x - a.x);
@@ -88,7 +88,7 @@ export default class Vector2 {
 
 	divide(scalar) {
 		scalar = 1 / scalar;
-		this.multiply(scalar)
+		this.multiply(scalar);
 	}
 
 	negate() {
@@ -136,3 +136,9 @@ export default class Vector2 {
 	}
 
 }
+
+// export Behaviors from "./Behaviors";
+
+export { Vector2 };
+
+//# sourceMappingURL=vex.es6.map

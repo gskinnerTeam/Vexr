@@ -1,6 +1,6 @@
-import Vector2 from "./vex";
+import Vector2 from "./Vector2";
 
-class Behavior {
+export class Behavior {
 	static seek(actor, targetPosition) {
 		var desired = Vector2.subtract(targetPosition, actor.location);
 		desired.normalize();
@@ -79,7 +79,8 @@ class Behavior {
 	}
 }
 
-class Actor {
+// TODO: Move to own source file?
+export class Actor {
 	constructor(className, location) {
 		this.type = className;
 		this.dead = false;
