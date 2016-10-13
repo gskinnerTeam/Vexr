@@ -358,11 +358,13 @@ var Vector2 = function () {
 	}, {
 		key: "rotate",
 		value: function rotate(degrees) {
+			var pivotVector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector2(0, 0);
+
 			var rads = Vector2.degreesToRadians(degrees);
 			var cosineAngle = Math.cos(rads);
 			var sineAngle = Math.sin(rads);
-			this.x = cosineAngle * this.x - sineAngle * this.y;
-			this.y = sineAngle * this.x + cosineAngle * this.y;
+			this.x = cosineAngle * (this.x - pivotVector.x) + sineAngle * (this.y - pivotVector.y) + pivotVector.x;
+			this.y = cosineAngle * (this.y - pivotVector.y) - sineAngle * (this.x - pivotVector.x) + pivotVector.y;
 		}
 	}, {
 		key: "magnitude",
