@@ -6,6 +6,7 @@ module.exports = function (config) {
     files: [
       "dist/vex.global.js",
       "test/**/*.js"
-    ]
+    ],
+    reporters: [ "mocha" ]
   });
 };
