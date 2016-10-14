@@ -111,13 +111,19 @@ describe('New Vector2()', function() {
 			assert.equal(1, vec.magnitude());
 		});
 
-		it('Random Normalized Vector Magnitude Is Within Tolerance for 1000 vectors ( <= 2.220446049250313e-16 )', function() {
-			for(var i = 0; i < 1000; i++) {
-				var vec = new Vector2(50 - (Math.random() * 1000), 50 - (Math.random() * 1000));
+		it('Random Normalized Vector Magnitude Is Within Tolerance for 50000 vectors ( <= 2.220446049250313e-16 )', function() {
+			for(var i = 0; i < 1000000; i++) {
+				var vec = new Vector2(250000 - (Math.random() * 500000), 250000 - (Math.random() * 500000));
 				vec.normalize();
-				assert.equal(true, Math.abs(vec.magnitude() - 1) <= 2.220446049250313e-16);
+				var error = vec.magnitude() - 1;
+				if (error > 2.220446049250313e-16) {
+						console.log(error, vec.magnitude());
+				}
+
+				assert.equal(true, error <= 2.220446049250313e-16);
 			}
 		});
+
 
 		it('Normalized Vector Operations', function() {
 			var vec = new Vector2(10,10);
@@ -131,7 +137,25 @@ describe('New Vector2()', function() {
 			assert.equal(10, vec.x);
 			assert.equal(10, vec.y);
 		});
+
 	});
 
-
+	describe('Static Converters', function() {
+		it("Static Vector degreesToRadians", function(){
+			var vec = new Vector2(1,0);
+			var radians =  0.017453292519943295;
+			for(var i = 0; i < 360; i++) {
+				var radian = Vector2.degreesToRadians(i);
+				assert.equal(i*radians, radian);
+			}
+		});
+		it("Static Vector radiansToDegrees", function(){
+			var vec = new Vector2(1,0);
+			var radian =  0.017453292519943295;
+			for(var i = 0; i < 360; i++) {
+				var degree = Vector2.radiansToDegrees(radian*i);
+				assert.equal(i, Math.round(degree));
+			}
+		});
+	});
 });
