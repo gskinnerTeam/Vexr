@@ -13,7 +13,7 @@ const paths = {
   dist: "./dist/",
   sourceFiles: "./src/**/*.js",
   sourcemaps: ".",
-  testConfig: `${__dirname}/test/_conf.js`
+  testConfig: `${__dirname}/test/karma.conf.js`
 };
 
 const buildCaches = {};
