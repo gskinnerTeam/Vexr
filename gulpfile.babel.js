@@ -64,8 +64,8 @@ gulp.task("bundle:global", function (done) {
     moduleName: "Vex",
     plugins: [ babel() ]
   };
-  bundle(options, "vex.global.js", false);
-  bundle(options, "vex.global.min.js", true);
+  bundle(options, "vex.js", false);
+  bundle(options, "vex.min.js", true);
   done();
 });
 
