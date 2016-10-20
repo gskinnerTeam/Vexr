@@ -77,6 +77,7 @@ export default class Behavior {
 			actor.location.y = height;
 		}
 	}
+
 	static wrap(actor, width, height) {
 		if (actor.location.x < 0) {
 			actor.location.x = width;
@@ -89,6 +90,19 @@ export default class Behavior {
 		}
 		if (actor.location.y > height) {
 			actor.location.y = 0;
+		}
+	}
+
+	static disableOutside(actor, margin = 10) {
+		if (actor.location.x < 0 - margin || actor.location.y < 0 - margin || actor.location.x > width + margin || actor.location.y > height + margin) {
+			actor.active = false;
+			actor.visible = false;
+		}
+	}
+
+	static destroyOutside(actor, margin = 10) {
+		if (actor.location.x < 0 - margin || actor.location.y < 0 - margin || actor.location.x > width + margin || actor.location.y > height + margin) {
+			actor.dead = true;
 		}
 	}
 }
