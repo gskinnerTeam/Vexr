@@ -3,37 +3,43 @@ export default class GameLoop {
 		this.gameObjects = [];
 		this.gameStart();
 	}
-	getType (type) {
+
+	getType(type) {
 		var matches = [];
-		for(var i = 0; i < this.gameObjects.length; i++) {
-			if(this.gameObjects[i].type === type) {
+		for (var i = 0; i < this.gameObjects.length; i++) {
+			if (this.gameObjects[i].type === type) {
 				matches.push(this.gameObjects[i]);
 			}
 		}
 		return matches;
 	}
-	update () {
+
+	update() {
 		this.removeActors();
-		for(var i = 0; i < this.gameObjects.length; i++) {
+		for (var i = 0; i < this.gameObjects.length; i++) {
 			this.gameObjects[i].update();
 		}
 	}
-	addActor (actor) {
+
+	addActor(actor) {
 		this.gameObjects.push(actor);
 	}
-	removeActors () {
-		for(var i = 0; i < this.gameObjects.length; i++) {
-			this.gameObjects.splice(i,1);
+
+	removeActors() {
+		for (var i = 0; i < this.gameObjects.length; i++) {
+			this.gameObjects.splice(i, 1);
 		}
 	}
-	render (){
-		for(var i = 0; i < this.gameObjects.length; i++) {
-			if(!this.gameObjects[i].dead) {
+
+	render() {
+		for (var i = 0; i < this.gameObjects.length; i++) {
+			if (!this.gameObjects[i].dead) {
 				this.gameObjects[i].render();
 			}
 		}
 	}
-	loop () {
+
+	loop() {
 		this.update();
 		this.render();
 		window.requestAnimationFrame(this.loop.bind(this));
