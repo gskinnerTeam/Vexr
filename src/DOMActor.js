@@ -1,7 +1,7 @@
 import Vector2 from "./Vector2";
 import Actor from "./Actor";
 
-export default class DOMActor extends Actor{
+export default class DOMActor extends Actor {
 	constructor(className, location) {
 		super(className, location);
 		this.element = document.createElement("div");
@@ -21,9 +21,10 @@ export default class DOMActor extends Actor{
 	}
 
 	move() {
-		if(this.active) {
-			// extend this class and build your own update function;
-		}
+		//extend this class and add your own custom move code.
+		this.velocity.add(this.acceleration);
+		this.location.add(this.velocity);
+		this.acceleration.set(0,0);
 	}
 
 	destroy() {

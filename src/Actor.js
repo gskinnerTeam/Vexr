@@ -4,7 +4,7 @@ export default class Actor {
 	constructor(className, location) {
 		this.type = className;
 		this.active = true;
-		this.render = true;
+		this.visible = true;
 		this.dead = false;
 		this.me = Math.floor(Math.random() * 9007199254740991);
 		this.location = location || new Vector2(-1000, -1000);
@@ -15,22 +15,29 @@ export default class Actor {
 		this.maxForce = 1;
 		this.parent = null;
 	}
+
 	update() {
-		if(this.active) {
+		if (this.active) {
 			this.move();
 		}
 	}
-	move() {
 
-	}
 	render() {
-		if(this.render) {
+		if (this.visible) {
 			this.draw();
 		}
 	}
-	draw() {
 
+	move() {
+		this.velocity.add(this.acceleration);
+		this.location.add(this.velocity);
+		this.acceleration.set(0,0);
 	}
+
+	draw() {
+		// override this function win your drawing code
+	}
+
 	destroy() {
 		this.dead = true;
 	}
