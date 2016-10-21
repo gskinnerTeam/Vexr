@@ -58,38 +58,48 @@ export default class Behavior {
 		this.avoidAll(actor, [target], avoidRadius);
 	}
 
-	static constrain(actor, width, height) {
-		if (actor.location.x < 0) {
+	static constrain(actor, minWidth, maxWidth, minHeight, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth) {
 			actor.velocity.x *= -1;
-			actor.location.x = 0;
+			actor.location.x = minWidth;
 		}
-		if (actor.location.y < 0) {
+		if (actor.location.y < minHeight) {
 			actor.velocity.y *= -1;
-			actor.location.y = 0;
+			actor.location.y = minHeight;
 		}
-		if (actor.location.x > width) {
+		if (actor.location.x > maxWidth) {
 
 			actor.velocity.x *= -1;
-			actor.location.x = width;
+			actor.location.x = maxWidth;
 		}
-		if (actor.location.y > height) {
+		if (actor.location.y > maxHeight) {
 			actor.velocity.y *= -1;
-			actor.location.y = height;
+			actor.location.y = maxHeight;
 		}
 	}
 
-	static wrap(actor, width, height) {
-		if (actor.location.x < 0) {
-			actor.location.x = width;
+	static wrap(actor, minWidth, maxWidth, minHeight, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth) {
+			actor.location.x = maxWidth;
 		}
-		if (actor.location.y < 0) {
-			actor.location.y = 0;
+		if (actor.location.y < minHeight) {
+			actor.location.y = maxHeight;
 		}
-		if (actor.location.x > width) {
-			actor.location.x = width;
+		if (actor.location.x > maxWidth) {
+			actor.location.x = minWidth;
 		}
-		if (actor.location.y > height) {
-			actor.location.y = 0;
+		if (actor.location.y > maxHeight) {
+			actor.location.y = minHeight;
 		}
 	}
 
