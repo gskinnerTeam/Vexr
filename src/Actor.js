@@ -16,6 +16,10 @@ export default class Actor {
 		this.parent = null;
 	}
 
+	addForce(vector) {
+		this.acceleration.add(vector);
+	}
+
 	update() {
 		if (this.active) {
 			this.move();

@@ -1,7 +1,12 @@
 export default class GameLoop {
 	constructor() {
 		this.gameObjects = [];
-		this.gameStart();
+		this.inputState = null;
+		this.controller = [];
+	}
+
+	setController(inputController) {
+		this.controller.push(inputController);
 	}
 
 	getType(type) {
@@ -15,6 +20,9 @@ export default class GameLoop {
 	}
 
 	update() {
+		if(this.controller != null) {
+			this.inputState = this.controller.keyMap;
+		}
 		this.removeActors();
 		for (var i = 0; i < this.gameObjects.length; i++) {
 			this.gameObjects[i].update();
@@ -27,15 +35,15 @@ export default class GameLoop {
 
 	removeActors() {
 		for (var i = 0; i < this.gameObjects.length; i++) {
-			this.gameObjects.splice(i, 1);
+			if(this.gameObjects[i].dead) {
+				this.gameObjects.splice(i, 1);
+			}
 		}
 	}
 
 	render() {
 		for (var i = 0; i < this.gameObjects.length; i++) {
-			if (!this.gameObjects[i].dead) {
-				this.gameObjects[i].render();
-			}
+			this.gameObjects[i].render();
 		}
 	}
 

@@ -20,13 +20,6 @@ export default class DOMActor extends Actor {
 			`translateX(${this.location.x}px) translateY(${this.location.y}px) rotate(${this.angle}deg)`;
 	}
 
-	move() {
-		//extend this class and add your own custom move code.
-		this.velocity.add(this.acceleration);
-		this.location.add(this.velocity);
-		this.acceleration.set(0,0);
-	}
-
 	destroy() {
 		this.dead = true;
 		this.element.remove();
