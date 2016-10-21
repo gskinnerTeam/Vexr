@@ -1,8 +1,6 @@
 export default class GameLoop {
 	constructor() {
 		this.gameObjects = [];
-		this.inputState = null;
-		this.controller = [];
 	}
 
 	setController(inputController) {
@@ -20,9 +18,6 @@ export default class GameLoop {
 	}
 
 	update() {
-		if(this.controller != null) {
-			this.inputState = this.controller.keyMap;
-		}
 		this.removeActors();
 		for (var i = 0; i < this.gameObjects.length; i++) {
 			this.gameObjects[i].update();
