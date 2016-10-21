@@ -22,11 +22,9 @@ export default class InputController {
 
 	setMousePos(e) {
 		this.mousePos.set(e.pageX, e.pageY);
-		//console.log(this.mousePos);
 	}
 
 	setMouseUp(e) {
-		console.log(e)
 		var fakeKey = {
 			key: "mouse" + e.button,
 			type: "keyup"
@@ -35,7 +33,6 @@ export default class InputController {
 	}
 
 	setMouseDown(e) {
-		console.log(e)
 		var fakeKey = {
 			key: "mouse" + e.button,
 			type: "keydown"
