@@ -1,5 +1,5 @@
-// karma puts the Vex global module in the test environment.
-var Vector2 = Vex.Vector2;
+// karma puts the Vexr global module in the test environment.
+var Vector2 = Vexr.Vector2;
 
 function errorTolerance(error, tolerance) {
     tolerance = tolerance || 2.1316282072803006e-14;
@@ -234,7 +234,7 @@ describe('Vector2 Methods', function () {
             added = Vector2.dist(vec1, vec2);
             assert.equal(10, added);
             vec1 = new Vector2(0.5,0);
-            vec2 = new Vector2(0,0.5);  
+            vec2 = new Vector2(0,0.5);
             added = Vector2.dist(vec1, vec2);
             assert.equal(0.7071067811865476, added);
         });

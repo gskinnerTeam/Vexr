@@ -2,8 +2,8 @@ class Vector2 {
 
 	static angleBetween(a, b) {
 		var mag = a.magnitude() * b.magnitude();
-		var dot = Vector2.dot(a,b);
-		return Math.acos(dot/mag);
+		var dot = Vector2.dot(a, b);
+		return Math.acos(dot / mag);
 	}
 
 	static lerp(a, b, t) {
@@ -119,14 +119,14 @@ class Vector2 {
 		}
 	}
 
-	rotate(degrees, pivotVector = new Vector2(0,0), stabilize = false) {
+	rotate(degrees, pivotVector = new Vector2(0, 0), stabilize = false) {
 		var mag = this.magnitude();
 		var rads = Vector2.degreesToRadians(degrees);
 		var cosineAngle = Math.cos(rads);
 		var sineAngle = Math.sin(rads);
 		this.x = (cosineAngle * (this.x - pivotVector.x)) + (sineAngle * (this.y - pivotVector.y)) + pivotVector.x;
 		this.y = (cosineAngle * (this.y - pivotVector.y)) - (sineAngle * (this.x - pivotVector.x)) + pivotVector.y;
-		if(stabilize) {
+		if (stabilize) {
 			this.normalize();
 			this.multiply(mag);
 		}
@@ -149,4 +149,4 @@ class Vector2 {
 
 export { Vector2 };
 
-//# sourceMappingURL=vex.es6.map
+//# sourceMappingURL=vexr.es6.map

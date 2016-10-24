@@ -1,12 +1,12 @@
 {
-  "name": "Vex",
+  "name": "Vexr",
   "version": "0.0.1",
   "description": "A 2D Vector and Behavior Library",
-  "main": "dist/vex.c.min.js",
-  "jsnext:main": "dist/vex.es6.js",
+  "main": "dist/vexr.cjs.js",
+  "jsnext:main": "dist/vexr.es6.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mwmwmw/Vex.git"
+    "url": "git+https://github.com/mwmwmw/Vexr.git"
   },
   "keywords": [
     "Vectors",
@@ -18,17 +18,17 @@
   ],
   "contributors": [
     "Matthew Willox <> (https://github.com/mwmwmw)",
-    "Patrick McGuckin <patrick@gskinner.com> (https://github.com/tehvgg)"
+    "Patrick McGuckin <p.mcgooks@gmail.com> (https://github.com/tehvgg)"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/mwmwmw/Vex/issues"
+    "url": "https://github.com/mwmwmw/Vexr/issues"
   },
   "scripts": {
     "build": "gulp build",
     "test": "gulp test"
   },
-  "homepage": "https://github.com/mwmwmw/Vex#readme",
+  "homepage": "https://github.com/mwmwmw/Vexr#readme",
   "devDependencies": {
     "babel-core": "^6.14.0",
     "babel-plugin-external-helpers": "^6.8.0",

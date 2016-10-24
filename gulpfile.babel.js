@@ -7,6 +7,7 @@ import uglify from "gulp-uglify";
 import sourcemaps from "gulp-sourcemaps";
 import buffer from "vinyl-buffer";
 import karma from "karma";
+import fs from "fs";
 
 const paths = {
   entry: "./src/main.js",
@@ -18,11 +19,14 @@ const paths = {
 
 const buildCaches = {};
 
+const pkg = JSON.parse(fs.readFileSync("./package.json"));
+
 function mapFile (filename) {
   return filename.replace(".js", "");
 }
 
-function bundle (options, filename, minify) {
+function bundle (options, type, minify) {
+  const filename = `${pkg.name.toLowerCase()}${type.length ? `.${type}` : ""}${minify ? ".min" : ""}.js`;
   if (buildCaches[filename] != null) { options.cache = buildCaches[filename]; }
   options.entry = paths.entry;
 
@@ -44,7 +48,7 @@ function bundle (options, filename, minify) {
 
 gulp.task("bundle:es6", function (done) {
   let options = { format: "es" };
-  bundle(options, "vex.es6.js");
+  bundle(options, "es6");
   done();
 });
 
@@ -53,19 +57,19 @@ gulp.task("bundle:cjs", function (done) {
     format: "cjs",
     plugins: [ babel() ]
   }
-  bundle(options, "vex.c.js", false);
-  bundle(options, "vex.c.min.js", true);
+  bundle(options, "cjs", false);
+  bundle(options, "cjs", true);
   done();
 });
 
 gulp.task("bundle:global", function (done) {
   let options = {
     format: "iife",
-    moduleName: "Vex",
+    moduleName: pkg.name,
     plugins: [ babel() ]
   };
-  bundle(options, "vex.js", false);
-  bundle(options, "vex.min.js", true);
+  bundle(options, "", false);
+  bundle(options, "", true);
   done();
 });
 

@@ -1,5 +1,6 @@
-(function (exports) {
 'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
 
 var asyncGenerator = function () {
   function AwaitValue(value) {
@@ -396,6 +397,4 @@ var Vector2 = function () {
 
 exports.Vector2 = Vector2;
 
-}((this.Vex = this.Vex || {})));
-
-//# sourceMappingURL=vex.global.map
+//# sourceMappingURL=vexr.cjs.map

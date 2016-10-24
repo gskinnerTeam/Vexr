@@ -4,7 +4,7 @@ module.exports = function (config) {
     frameworks: [ "mocha", "chai" ],
     basePath: "../",
     files: [
-      "dist/vex.js",
+      "dist/vexr.js",
       "test/**/*.js"
     ],
     reporters: [ "mocha" ]
