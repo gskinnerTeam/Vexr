@@ -2,10 +2,7 @@
 	"presets": [
     [ "es2015", { "modules": false } ]
   ],
-	"plugins": [[
-		"external-helpers", {
-			"output-type": "umd",
-			"whitelist": [ "classCallCheck", "createClass" ]
-		}
-	]]
+	"plugins": [
+		"external-helpers"
+	]
 }
