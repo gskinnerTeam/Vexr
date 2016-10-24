@@ -216,7 +216,9 @@ var Vector2 = function () {
 	createClass(Vector2, null, [{
 		key: "angleBetween",
 		value: function angleBetween(a, b) {
-			return Math.atan2(b.y - a.y, b.x - a.x);
+			var mag = a.magnitude() * b.magnitude();
+			var dot = Vector2.dot(a, b);
+			return Math.acos(dot / mag);
 		}
 	}, {
 		key: "lerp",
@@ -234,7 +236,8 @@ var Vector2 = function () {
 		key: "normalize",
 		value: function normalize(vector) {
 			var vec = vector.get();
-			return vec.normalize();
+			vec.normalize();
+			return vec;
 		}
 	}, {
 		key: "radiansToDegrees",
@@ -360,12 +363,18 @@ var Vector2 = function () {
 		key: "rotate",
 		value: function rotate(degrees) {
 			var pivotVector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector2(0, 0);
+			var stabilize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
+			var mag = this.magnitude();
 			var rads = Vector2.degreesToRadians(degrees);
 			var cosineAngle = Math.cos(rads);
 			var sineAngle = Math.sin(rads);
 			this.x = cosineAngle * (this.x - pivotVector.x) + sineAngle * (this.y - pivotVector.y) + pivotVector.x;
 			this.y = cosineAngle * (this.y - pivotVector.y) - sineAngle * (this.x - pivotVector.x) + pivotVector.y;
+			if (stabilize) {
+				this.normalize();
+				this.multiply(mag);
+			}
 		}
 	}, {
 		key: "magnitude",

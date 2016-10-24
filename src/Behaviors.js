@@ -1,6 +1,6 @@
 import Vector2 from "./Vector2";
 
-export class Behavior {
+export default class Behavior {
 	static seek(actor, targetPosition) {
 		var desired = Vector2.subtract(targetPosition, actor.location);
 		desired.normalize();
@@ -58,60 +58,73 @@ export class Behavior {
 		this.avoidAll(actor, [target], avoidRadius);
 	}
 
-	static constrain(actor, width, height) {
-		if (actor.location.x < 0) {
+	static constrain(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth) {
 			actor.velocity.x *= -1;
-			actor.location.x = 0;
+			actor.location.x = minWidth;
 		}
-		if (actor.location.y < 0) {
+		if (actor.location.y < minHeight) {
 			actor.velocity.y *= -1;
-			actor.location.y = 0;
+			actor.location.y = minHeight;
 		}
-		if (actor.location.x > width) {
+		if (actor.location.x > maxWidth) {
 
 			actor.velocity.x *= -1;
-			actor.location.x = width;
+			actor.location.x = maxWidth;
 		}
-		if (actor.location.y > height) {
+		if (actor.location.y > maxHeight) {
 			actor.velocity.y *= -1;
-			actor.location.y = height;
+			actor.location.y = maxHeight;
 		}
 	}
-}
 
-// TODO: Move to own source file?
-export class Actor {
-	constructor(className, location) {
-		this.type = className;
-		this.dead = false;
-		this.me = Math.floor(Math.random() * 9007199254740991);
-		this.element = document.createElement("div");
-		this.element.classList.add("actor");
-		this.element.classList.add(className);
-		this.location = location || new Vector2(-1000, -1000);
-		this.velocity = new Vector2(0, 0);
-		this.acceleration = new Vector2(0, 0);
-		this.angle = 0;
-		this.maxSpeed = 15;
-		this.maxForce = 1;
-		this.parent = null;
+	static wrap(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth) {
+			actor.location.x = maxWidth;
+		}
+		if (actor.location.y < minHeight) {
+			actor.location.y = maxHeight;
+		}
+		if (actor.location.x > maxWidth) {
+			actor.location.x = minWidth;
+		}
+		if (actor.location.y > maxHeight) {
+			actor.location.y = minHeight;
+		}
 	}
 
-	addToParent(parentElement) {
-		this.parent = parentElement;
-		this.parent.appendChild(this.element);
+	static disableOutside(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
+			actor.active = false;
+			actor.visible = false;
+		}
 	}
 
-	render() {
-		this.element.style.transform =
-			`translateX(${this.location.x}px) translateY(${this.location.y}px) rotate(${this.angle}deg)`;
-	}
+	static destroyOutside(actor, minWidth, minHeight, maxWidth,  maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
 
-	update() {
-	}
+		console.log()
 
-	destroy() {
-		this.dead = true;
-		this.element.remove();
+		if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
+			actor.dead = true;
+		}
 	}
 }
