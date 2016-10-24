@@ -58,7 +58,7 @@ export default class Behavior {
 		this.avoidAll(actor, [target], avoidRadius);
 	}
 
-	static constrain(actor, minWidth, maxWidth, minHeight, maxHeight, margin = 0) {
+	static constrain(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
 		minWidth -= margin;
 		maxWidth += margin;
 		minHeight -= margin;
@@ -83,7 +83,7 @@ export default class Behavior {
 		}
 	}
 
-	static wrap(actor, minWidth, maxWidth, minHeight, maxHeight, margin = 0) {
+	static wrap(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
 		minWidth -= margin;
 		maxWidth += margin;
 		minHeight -= margin;
@@ -103,15 +103,27 @@ export default class Behavior {
 		}
 	}
 
-	static disableOutside(actor, margin = 10) {
-		if (actor.location.x < 0 - margin || actor.location.y < 0 - margin || actor.location.x > width + margin || actor.location.y > height + margin) {
+	static disableOutside(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
 			actor.active = false;
 			actor.visible = false;
 		}
 	}
 
-	static destroyOutside(actor, margin = 10) {
-		if (actor.location.x < 0 - margin || actor.location.y < 0 - margin || actor.location.x > width + margin || actor.location.y > height + margin) {
+	static destroyOutside(actor, minWidth, minHeight, maxWidth,  maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		console.log()
+
+		if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
 			actor.dead = true;
 		}
 	}
