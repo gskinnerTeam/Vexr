@@ -23,5 +23,6 @@ export default class DOMActor extends Actor {
 	destroy() {
 		this.dead = true;
 		this.element.remove();
+		this.parent = null;
 	}
 }
