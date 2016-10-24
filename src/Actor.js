@@ -23,6 +23,9 @@ export default class Actor {
 	update() {
 		if (this.active) {
 			this.move();
+			this.velocity.add(this.acceleration);
+			this.location.add(this.velocity);
+			this.acceleration.set(0,0);
 		}
 	}
 
@@ -33,9 +36,7 @@ export default class Actor {
 	}
 
 	move() {
-		this.velocity.add(this.acceleration);
-		this.location.add(this.velocity);
-		this.acceleration.set(0,0);
+
 	}
 
 	draw() {
