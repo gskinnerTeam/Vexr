@@ -22,6 +22,10 @@ export default class Vector2 {
 		return vec;
 	}
 
+	static magnitude(vec) {
+			return Math.sqrt(Vector2.dot(vec, vec));
+	}
+
 	static radiansToDegrees(radians) {
 		return radians * (180 / Math.PI);
 	}
