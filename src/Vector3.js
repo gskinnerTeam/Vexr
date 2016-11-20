@@ -23,6 +23,10 @@ export default class Vector3 {
 		return vec;
 	}
 
+	static magnitude(vector) {
+		return Math.sqrt(Vector3.dot(vector, vector));
+	}
+
 	static radiansToDegrees(radians) {
 		return radians * (180 / Math.PI);
 	}
@@ -53,6 +57,14 @@ export default class Vector3 {
 	static dot(a, b) {
 		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
+
+	static cross(a, b) {
+		var x = a.y * b.z - b.y * a.z;
+		var y = a.z * b.x - b.z * a.x;
+		var z = a.x * b.y - b.x * a.y;
+		return new Vector3(x, y, z);
+	}
+
 
 	static dist(a, b) {
 		var vec1 = a.x - b.x;
