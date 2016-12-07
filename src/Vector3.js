@@ -102,10 +102,10 @@ export default class Vector3 {
 	}
 
 	get() {
-		return new Vector3(this.x, this.y);
+		return new Vector3(this.x, this.y, this.z);
 	}
 
-	set(x, y) {
+	set(x, y, z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
