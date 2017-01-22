@@ -1,3 +1,5 @@
+import Converters from "./Converters";
+
 export default class Vector3 {
 
 	static angleBetween(a, b) {
@@ -14,7 +16,7 @@ export default class Vector3 {
 	}
 
 	static map(value, bottomA, topA, bottomB, topB) {
-		return bottomB + (topB - bottomB) * (value - bottomA) / (topA - bottomA);
+		return Converters.MapRange(value, bottomA, topA, bottomB, topB);
 	}
 
 	static normalize(vector) {
@@ -28,11 +30,11 @@ export default class Vector3 {
 	}
 
 	static radiansToDegrees(radians) {
-		return radians * (180 / Math.PI);
+		return Converters.RadiansToDegrees(radians);
 	}
 
 	static degreesToRadians(degrees) {
-		return degrees * (Math.PI / 180);
+		return Converters.DegreesToRadians(degrees);
 	}
 
 	static add(a, b) {
