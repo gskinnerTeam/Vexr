@@ -1,4 +1,4 @@
-import Converters from "./Converters";
+import Convert from "./Convert";
 
 export default class Vector3 {
 
@@ -16,7 +16,7 @@ export default class Vector3 {
 	}
 
 	static map(value, bottomA, topA, bottomB, topB) {
-		return Converters.MapRange(value, bottomA, topA, bottomB, topB);
+		return Convert.MapRange(value, bottomA, topA, bottomB, topB);
 	}
 
 	static normalize(vector) {
@@ -30,11 +30,11 @@ export default class Vector3 {
 	}
 
 	static radiansToDegrees(radians) {
-		return Converters.RadiansToDegrees(radians);
+		return Convert.RadiansToDegrees(radians);
 	}
 
 	static degreesToRadians(degrees) {
-		return Converters.DegreesToRadians(degrees);
+		return Convert.DegreesToRadians(degrees);
 	}
 
 	static add(a, b) {
