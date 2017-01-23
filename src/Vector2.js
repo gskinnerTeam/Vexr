@@ -14,10 +14,6 @@ export default class Vector2 {
 		return new Vector2(x, y);
 	}
 
-	static map(value, bottomA, topA, bottomB, topB) {
-		return Convert.MapRange(value, bottomA, topA, bottomB, topB);
-	}
-
 	static normalize(vector) {
 		var vec = vector.get();
 		vec.normalize();
@@ -26,14 +22,6 @@ export default class Vector2 {
 
 	static magnitude(vec) {
 			return Math.sqrt(Vector2.dot(vec, vec));
-	}
-
-	static radiansToDegrees(radians) {
-		return Convert.RadiansToDegrees(radians);
-	}
-
-	static degreesToRadians(degrees) {
-		return Convert.DegreesToRadians(degrees);
 	}
 
 	static add(a, b) {
@@ -93,7 +81,7 @@ export default class Vector2 {
 		return new Vector2(this.x, this.y);
 	}
 
-	set(x, y) {
+	set(x=0, y=0) {
 		this.x = x;
 		this.y = y;
 	}
@@ -146,7 +134,7 @@ export default class Vector2 {
 
 	rotate(degrees, pivotVector = new Vector2(0, 0), stabilize = false) {
 		var mag = this.magnitude();
-		var rads = Vector2.degreesToRadians(degrees);
+		var rads = Convert.degreesToRadians(degrees);
 		var cosineAngle = Math.cos(rads);
 		var sineAngle = Math.sin(rads);
 		this.x = (cosineAngle * (this.x - pivotVector.x)) + (sineAngle * (this.y - pivotVector.y)) + pivotVector.x;
