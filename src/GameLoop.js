@@ -1,6 +1,7 @@
 export default class GameLoop {
 	constructor() {
 		this.gameObjects = [];
+		this.controller = [];
 	}
 
 	setController(inputController) {
