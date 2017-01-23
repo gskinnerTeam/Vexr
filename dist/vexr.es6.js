@@ -1,3 +1,19 @@
+class Convert {
+    
+    static RadiansToDegrees(radians) {
+        return radians * (180 / Math.PI);
+    }
+
+    static DegreesToRadians(degrees) {
+        return degrees * (Math.PI / 180);
+    }
+
+    static MapRange(value, bottomA, topA, bottomB, topB) {
+        return bottomB + (topB - bottomB) * (value - bottomA) / (topA - bottomA);
+    }
+
+}
+
 class Vector2 {
 
 	static angleBetween(a, b) {
@@ -12,10 +28,6 @@ class Vector2 {
 		return new Vector2(x, y);
 	}
 
-	static map(value, bottomA, topA, bottomB, topB) {
-		return bottomB + (topB - bottomB) * (value - bottomA) / (topA - bottomA);
-	}
-
 	static normalize(vector) {
 		var vec = vector.get();
 		vec.normalize();
@@ -24,14 +36,6 @@ class Vector2 {
 
 	static magnitude(vec) {
 			return Math.sqrt(Vector2.dot(vec, vec));
-	}
-
-	static radiansToDegrees(radians) {
-		return radians * (180 / Math.PI);
-	}
-
-	static degreesToRadians(degrees) {
-		return degrees * (Math.PI / 180);
 	}
 
 	static add(a, b) {
@@ -83,11 +87,15 @@ class Vector2 {
 		this.raw[1] = value;
 	}
 
+	get z () {
+		return 0;
+	}
+	
 	get() {
 		return new Vector2(this.x, this.y);
 	}
 
-	set(x, y) {
+	set(x=0, y=0) {
 		this.x = x;
 		this.y = y;
 	}
@@ -140,7 +148,7 @@ class Vector2 {
 
 	rotate(degrees, pivotVector = new Vector2(0, 0), stabilize = false) {
 		var mag = this.magnitude();
-		var rads = Vector2.degreesToRadians(degrees);
+		var rads = Convert.degreesToRadians(degrees);
 		var cosineAngle = Math.cos(rads);
 		var sineAngle = Math.sin(rads);
 		this.x = (cosineAngle * (this.x - pivotVector.x)) + (sineAngle * (this.y - pivotVector.y)) + pivotVector.x;
@@ -179,10 +187,6 @@ class Vector3 {
 		return new Vector3(x, y, z);
 	}
 
-	static map(value, bottomA, topA, bottomB, topB) {
-		return bottomB + (topB - bottomB) * (value - bottomA) / (topA - bottomA);
-	}
-
 	static normalize(vector) {
 		var vec = vector.get();
 		vec.normalize();
@@ -191,14 +195,6 @@ class Vector3 {
 
 	static magnitude(vector) {
 		return Math.sqrt(Vector3.dot(vector, vector));
-	}
-
-	static radiansToDegrees(radians) {
-		return radians * (180 / Math.PI);
-	}
-
-	static degreesToRadians(degrees) {
-		return degrees * (Math.PI / 180);
 	}
 
 	static add(a, b) {
@@ -271,7 +267,7 @@ class Vector3 {
 		return new Vector3(this.x, this.y, this.z);
 	}
 
-	set(x, y, z) {
+	set(x=0, y=0, z=0) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -331,9 +327,9 @@ class Vector3 {
 		}
 	}
 
-	rotate(degrees, pivotVector = new Vector3(0, 0), stabilize = false) {
+	rotate(degrees, pivotVector = new Vector3(), stabilize = false) {
 		var mag = this.magnitude();
-		var rads = Vector3.degreesToRadians(degrees);
+		var rads = Convert.degreesToRadians(degrees);
 		var cosineAngle = Math.cos(rads);
 		var sineAngle = Math.sin(rads);
 		this.x = (cosineAngle * (this.x - pivotVector.x)) + (sineAngle * (this.y - pivotVector.y)) + pivotVector.x;
@@ -523,8 +519,478 @@ class Matrix4 {
 
 }
 
-// export Behaviors from "./Behaviors";
+class Behavior {
+	static seek(actor, targetPosition) {
+		var desired = Vector3.subtract(targetPosition, actor.location);
+		desired.normalize();
+		desired.multiply(actor.maxSpeed);
+		var steer = Vector3.subtract(desired, actor.velocity);
+		steer.limit(actor.maxForce);
+		return steer;
+	}
 
-export { Vector2, Vector3, Matrix3, Matrix4 };
+	static arrive(actor, target, power = 50) {
+
+		var desired = Vector3.subtract(target, actor.location);
+		var dMag = desired.magnitude();
+		desired.normalize();
+		var mappedPower = Convert.MapRange(dMag, 0, power, 0, actor.maxSpeed);
+
+		desired.multiply(mappedPower);
+
+		var steer = Vector3.subtract(desired, actor.velocity);
+		steer.limit(actor.maxForce);
+
+		return steer;
+	}
+
+	static avoidAll(actor, obstacles, avoidRadius) {
+		var avoidRadius = 80 || avoidRadius;
+		var total = new Vector3(0, 0);
+		var count = 0;
+		for (var o in obstacles) {
+			var obstacle = obstacles[o];
+			var distance = Vector3.dist(actor.location, obstacle.location);
+			if ((distance > 0) && (distance < avoidRadius) && actor.me != obstacle.me) {
+				var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.me);
+				difference.normalize();
+				difference.divide(distance);
+				total.add(difference);
+				count++;
+			}
+		}
+		if (count > 0) {
+			total.divide(count);
+			total.normalize();
+			total.multiply(actor.maxSpeed);
+
+			var steer = Vector3.subtract(total, actor.velocity);
+			steer.limit(actor.maxForce);
+
+			return steer;
+		} else {
+			return new Vector3(0,0,0);
+		}
+	}
+
+	static avoid(actor, target, avoidRadius) {
+		this.avoidAll(actor, [target], avoidRadius);
+	}
+
+	static constrain(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth) {
+			actor.velocity.x *= -1;
+			actor.location.x = minWidth;
+		}
+		if (actor.location.y < minHeight) {
+			actor.velocity.y *= -1;
+			actor.location.y = minHeight;
+		}
+		if (actor.location.x > maxWidth) {
+
+			actor.velocity.x *= -1;
+			actor.location.x = maxWidth;
+		}
+		if (actor.location.y > maxHeight) {
+			actor.velocity.y *= -1;
+			actor.location.y = maxHeight;
+		}
+		
+	}
+
+	static wrap(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth) {
+			actor.location.x = maxWidth;
+		}
+		if (actor.location.y < minHeight) {
+			actor.location.y = maxHeight;
+		}
+		if (actor.location.x > maxWidth) {
+			actor.location.x = minWidth;
+		}
+		if (actor.location.y > maxHeight) {
+			actor.location.y = minHeight;
+		}
+	}
+
+	static disableOutside(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+
+		if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
+			actor.active = false;
+			actor.visible = false;
+		}
+	}
+
+	static destroyOutside(actor, minWidth, minHeight, maxWidth,  maxHeight, margin = 0) {
+		minWidth -= margin;
+		maxWidth += margin;
+		minHeight -= margin;
+		maxHeight += margin;
+		if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
+			actor.dead = true;
+		}
+	}
+}
+
+let hexString = "0123456789abcdef";
+
+class Generate {
+
+    static randomHexString(length) {
+        let bytes = "";
+        for(let i = 0; i<length; i++) {
+            bytes += hexString.substr(Math.floor(Math.random()*hexString.length),1);
+        }
+        return bytes;
+    }
+    
+    static UUID () {
+        return `${Generate.randomHexString(7)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(12)}`
+    }
+    
+}
+
+class Actor {
+	constructor(className, location = new Vector3(0, 0, 0)) {
+		this.type = className;
+		this.active = true;
+		this.visible = true;
+		this.dead = false;
+		this.id = Generate.UUID();
+		this.location = location;
+		this.velocity = new Vector3(0, 0, 0);
+		this.acceleration = new Vector3(0, 0, 0);
+		this.angle = 0;
+		this.maxSpeed = 15;
+		this.maxForce = 1;
+		this.parent = null;
+		this.children = [];
+	}
+
+	addForce(vector) {
+		this.acceleration.add(vector);
+	}
+
+	update() {
+		if (this.active) {
+			this.move();
+			this.velocity.add(this.acceleration);
+			this.location.add(this.velocity);
+			this.acceleration.set(0,0,0);
+		}
+	}
+
+	move() {
+
+	}
+
+	render() {
+		if (this.visible) {
+			this.draw();
+		}
+	}
+
+	draw() {
+		// override this function win your drawing code
+	}
+
+	destroy() {
+		this.dead = true;
+		for(let i = 0; i<this.children.length; i++) {
+			this.children[i].destroy();
+		}
+	}
+}
+
+class DOMActor extends Actor {
+	constructor(className, location) {
+		super(className, location);
+		this.element = document.createElement("div");
+		this.element.classList.add("actor");
+		this.element.classList.add(className);
+		this.parentElement = null;
+	}
+
+	addToParentElement(parentElement) {
+		this.parentElement = parentElement;
+		this.parentElement.appendChild(this.element);
+	}
+
+	draw() {
+		this.element.style.transform =
+			`translateX(${this.location.x}px) translateY(${this.location.y}px) rotate(${this.angle}deg)`;
+	}
+
+	destroy() {
+		this.dead = true;
+		this.element.remove();
+		this.parentElement = null;
+	}
+}
+
+class GameLoop {
+	constructor() {
+		this.gameObjects = [];
+	}
+
+	setController(inputController) {
+		this.controller.push(inputController);
+	}
+
+	getType(type) {
+		var matches = [];
+		for (var i = 0; i < this.gameObjects.length; i++) {
+			if (this.gameObjects[i].type === type) {
+				matches.push(this.gameObjects[i]);
+			}
+		}
+		return matches;
+	}
+
+	update() {
+		this.removeActors();
+		for (var i = 0; i < this.gameObjects.length; i++) {
+			this.gameObjects[i].update();
+		}
+	}
+
+	addActor(actor) {
+		this.gameObjects.push(actor);
+	}
+
+	removeActors() {
+		for (var i = 0; i < this.gameObjects.length; i++) {
+			if(this.gameObjects[i].dead) {
+				this.gameObjects.splice(i, 1);
+			}
+		}
+	}
+
+	render() {
+		for (var i = 0; i < this.gameObjects.length; i++) {
+			this.gameObjects[i].render();
+		}
+	}
+
+	loop() {
+		this.update();
+		this.render();
+		window.requestAnimationFrame(this.loop.bind(this));
+	}
+}
+
+let listeners = {};
+
+class EventLite {
+    static on (event, handler) {
+        if (listeners[event] === undefined) {
+            listeners[event] = [handler];
+        } else {
+            listeners[event].push(handler);
+        }
+        return handler;
+    }
+    static off (event, handler) {
+        if (listeners[event]) {
+            for (let i = listeners[event].length - 1; i >= 0; i--) {
+                if (listeners[event].length === 1) {
+                    delete listeners[event];
+                } else {
+                    listeners[event].splice(i, 1);
+                    break;
+                }
+            }
+        }
+    }
+    static trigger (event, ...data) {
+        if (listeners[event]) {
+            for (let i = listeners[event].length - 1; i >= 0; i--) {
+                if(listeners[event] !== undefined) {
+                    if (typeof listeners[event][i] === "function" && listeners[event][i] ) {
+                        listeners[event][i](data);
+                    } else {
+                        throw "Event handler is not a function.";
+                    }
+                }
+            }
+        }
+    }
+    static unbindAll () {
+        for (const event in listeners) {
+            delete listeners[event];
+        }
+        return true;
+    };
+}
+
+var resizeId;
+
+class Screen {
+    static get dimensions() {
+        return Screen._dimensions;
+    }
+    static set dimensions(value) {
+        if(Screen._dimensions != value) {
+            Screen._dimensions = value;
+        }
+    }
+    static get center() {
+        return Screen._center;
+    }
+    static set center(value) {
+        if(Screen._center != value) {
+            Screen._center = value;
+        }
+    }
+    static get resizeDelay() {
+        return Screen._resizeDelay;
+    }
+    static set resizeDelay(value) {
+        if(Screen._resizeDelay != value) {
+            Screen._resizeDelay = value;
+        }
+    }
+    static get anchors() {
+        return Screen._anchors;
+    }
+    static set anchors(value) {
+        if(Screen._anchors != value) {
+            Screen._anchors = value;
+        }
+    }
+    static get anchorPositions() {
+        return Screen._anchorPositions;
+    }
+    static set anchorPositions(value) {
+        if(Screen._anchorPositions != value) {
+            Screen._anchorPositions = value;
+        }
+    }
+    
+    static resize(e) {
+        clearTimeout(resizeId);
+        resizeId = setTimeout(Screen.recalculate, Screen.resizeDelay);
+    }
+
+    static recalculate() {
+        Screen.dimensions.set(window.innerWidth, window.innerHeight);
+        for(var anchor in Screen.anchors) {
+            if(Screen.anchors.hasOwnProperty(anchor)) {
+                Screen.anchorPositions[anchor].set(Screen.anchors[anchor].x * Screen.dimensions.x, Screen.anchors[anchor].y * Screen.dimensions.y);
+            }
+        }
+
+        EventLite.trigger("resize", Screen.dimensions, Screen.anchorPositions);
+    }
+
+    static getAnchor(name) {
+        return Screen.anchorPositions[name].get();
+    }
+
+    static setAnchor(name, ratioX, ratioY) {
+
+        if(Screen.anchors[name] == undefined) {
+            Screen.anchors[name] = new Vector2(ratioX, ratioY);
+            Screen.anchorPositions[name] = new Vector2(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
+        } else {
+            Screen.anchors[name].set(ratioX, ratioY);
+            Screen.anchorPositions[name].set(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
+        }
+
+    }
+    static removeAnchor (name) {
+        delete Screen.anchors[name];
+        delete Screen.anchorPositions[name];
+    }
+    static init() {
+        Screen.resizeDelay = 100;
+        Screen.anchors = {};
+        Screen.anchorPositions = {};
+        Screen.dimensions = new Vector2(window.innerWidth, window.innerHeight);
+        Screen.setAnchor("center", 0.5, 0.5);
+    }
+
+}
+Screen.init();
+
+class InputController {
+	constructor() {
+		this.keyMap = {};
+		this.mousePos = new Vector2();
+	}
+
+	bindEvents() {
+		document.addEventListener("mouseup", this.setMouseUp.bind(this));
+		document.addEventListener("mousedown", this.setMouseDown.bind(this));
+		document.addEventListener("mousemove", this.setMousePos.bind(this));
+		onkeydown = onkeyup = this.mapKeys.bind(this);
+	}
+
+	unbindEvents() {
+		document.removeEventListener("mouseup", this.setMouseUp.bind(this));
+		document.removeEventListener("mousedown", this.setMouseDown.bind(this));
+		document.removeEventListener("mousemove", this.setMousePos.bind(this));
+		onkeydown = onkeyup = null;
+	}
+
+	setMousePos(e) {
+		this.mousePos.set(e.pageX, e.pageY);
+	}
+
+	setMouseUp(e) {
+		var fakeKey = {
+			key: "mouse" + e.button,
+			type: "keyup"
+		};
+		this.mapKeys(fakeKey);
+	}
+
+	setMouseDown(e) {
+		var fakeKey = {
+			key: "mouse" + e.button,
+			type: "keydown"
+		};
+		this.mapKeys(fakeKey);
+	}
+
+	mapKeys(e) {
+		e = e || event;
+		this.keyMap[e.key] = e.type == 'keydown';
+	}
+
+	keyUp(key) {
+		console.log(key);
+	}
+
+	keyDown(key) {
+		console.log(key);
+	}
+
+	setKeys() {
+		for (var key in this.keyMap) {
+			if (this.keyMap[key]) {
+				this.keyDown(key);
+			} else {
+				this.keyUp(key);
+			}
+		}
+	}
+}
+
+export { Vector2, Vector3, Matrix3, Matrix4, Behavior as Behaviors, Actor, DOMActor, GameLoop, Screen, InputController, EventLite };
 
 //# sourceMappingURL=vexr.es6.map
