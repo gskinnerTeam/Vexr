@@ -1,5 +1,5 @@
 import Events from "./EventLite";
-import Vector2 from "./Vector2";
+import Vector3 from "./Vector3";
 
 var resizeId;
 var resizeEvent;
@@ -82,8 +82,8 @@ export default class Screen {
     static setAnchor(name, ratioX, ratioY) {
 
         if(Screen.anchors[name] == undefined) {
-            Screen.anchors[name] = new Vector2(ratioX, ratioY);
-            Screen.anchorPositions[name] = new Vector2(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
+            Screen.anchors[name] = new Vector3(ratioX, ratioY);
+            Screen.anchorPositions[name] = new Vector3(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
         } else {
             Screen.anchors[name].set(ratioX, ratioY);
             Screen.anchorPositions[name].set(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
@@ -98,7 +98,7 @@ export default class Screen {
         Screen.resizeDelay = 100;
         Screen.anchors = {};
         Screen.anchorPositions = {};
-        Screen.dimensions = new Vector2(window.innerWidth, window.innerHeight);
+        Screen.dimensions = new Vector3(window.innerWidth, window.innerHeight);
         Screen.setAnchor("center", 0.5, 0.5);
         if(Screen.dimensions.x > Screen.dimensions.y) {
             Screen.orientation = "landscape";

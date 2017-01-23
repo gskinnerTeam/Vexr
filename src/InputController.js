@@ -1,9 +1,9 @@
-import Vector2 from "./Vector2";
+import Vector3 from "./Vector3";
 
 export default class InputController {
 	constructor() {
 		this.keyMap = {};
-		this.mousePos = new Vector2();
+		this.mousePos = new Vector3();
 	}
 
 	bindEvents() {
