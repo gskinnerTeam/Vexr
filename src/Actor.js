@@ -1,19 +1,21 @@
-import Vector2 from "./Vector2";
+import Vector3 from "./Vector3";
+import Generate from "./Generate";
 
 export default class Actor {
-	constructor(className, location) {
+	constructor(className, location = new Vector3(0, 0, 0)) {
 		this.type = className;
 		this.active = true;
 		this.visible = true;
 		this.dead = false;
-		this.me = Math.floor(Math.random() * 9007199254740991);
-		this.location = location || new Vector2(-1000, -1000);
-		this.velocity = new Vector2(0, 0);
-		this.acceleration = new Vector2(0, 0);
+		this.id = Generate.UUID();
+		this.location = location;
+		this.velocity = new Vector3(0, 0, 0);
+		this.acceleration = new Vector3(0, 0, 0);
 		this.angle = 0;
 		this.maxSpeed = 15;
 		this.maxForce = 1;
 		this.parent = null;
+		this.children = [];
 	}
 
 	addForce(vector) {
@@ -25,8 +27,12 @@ export default class Actor {
 			this.move();
 			this.velocity.add(this.acceleration);
 			this.location.add(this.velocity);
-			this.acceleration.set(0,0);
+			this.acceleration.set(0,0,0);
 		}
+	}
+
+	move() {
+
 	}
 
 	render() {
@@ -35,15 +41,14 @@ export default class Actor {
 		}
 	}
 
-	move() {
-
-	}
-
 	draw() {
 		// override this function win your drawing code
 	}
 
 	destroy() {
 		this.dead = true;
+		for(let i = 0; i<this.children.length; i++) {
+			this.children[i].destroy();
+		}
 	}
 }
