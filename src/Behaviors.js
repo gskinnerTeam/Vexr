@@ -1,25 +1,28 @@
-import Vector2 from "./Vector2";
+import Convert from "./Convert";
+import Vector3 from "./Vector3";
+
+
 
 export default class Behavior {
 	static seek(actor, targetPosition) {
-		var desired = Vector2.subtract(targetPosition, actor.location);
+		var desired = Vector3.subtract(targetPosition, actor.location);
 		desired.normalize();
 		desired.multiply(actor.maxSpeed);
-		var steer = Vector2.subtract(desired, actor.velocity);
+		var steer = Vector3.subtract(desired, actor.velocity);
 		steer.limit(actor.maxForce);
 		return steer;
 	}
 
 	static arrive(actor, target, power = 50) {
 
-		var desired = Vector2.subtract(target, actor.location);
+		var desired = Vector3.subtract(target, actor.location);
 		var dMag = desired.magnitude();
 		desired.normalize();
-		var mappedPower = Vector2.map(dMag, 0, power, 0, actor.maxSpeed);
+		var mappedPower = Convert.MapRange(dMag, 0, power, 0, actor.maxSpeed);
 
 		desired.multiply(mappedPower);
 
-		var steer = Vector2.subtract(desired, actor.velocity);
+		var steer = Vector3.subtract(desired, actor.velocity);
 		steer.limit(actor.maxForce);
 
 		return steer;
@@ -27,13 +30,13 @@ export default class Behavior {
 
 	static avoidAll(actor, obstacles, avoidRadius) {
 		var avoidRadius = 80 || avoidRadius;
-		var total = new Vector2(0, 0);
+		var total = new Vector3(0, 0);
 		var count = 0;
 		for (var o in obstacles) {
 			var obstacle = obstacles[o];
-			var distance = Vector2.dist(actor.location, obstacle.location);
+			var distance = Vector3.dist(actor.location, obstacle.location);
 			if ((distance > 0) && (distance < avoidRadius) && actor.me != obstacle.me) {
-				var difference = Vector2.subtract(actor.location, obstacle.location, obstacle.me);
+				var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.me);
 				difference.normalize();
 				difference.divide(distance);
 				total.add(difference);
@@ -45,12 +48,12 @@ export default class Behavior {
 			total.normalize();
 			total.multiply(actor.maxSpeed);
 
-			var steer = Vector2.subtract(total, actor.velocity);
+			var steer = Vector3.subtract(total, actor.velocity);
 			steer.limit(actor.maxForce);
 
 			return steer;
 		} else {
-			return new Vector2(0, 0);
+			return new Vector3(0,0,0);
 		}
 	}
 
@@ -81,6 +84,7 @@ export default class Behavior {
 			actor.velocity.y *= -1;
 			actor.location.y = maxHeight;
 		}
+		
 	}
 
 	static wrap(actor, minWidth, minHeight, maxWidth, maxHeight, margin = 0) {
@@ -120,9 +124,6 @@ export default class Behavior {
 		maxWidth += margin;
 		minHeight -= margin;
 		maxHeight += margin;
-
-		console.log()
-
 		if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
 			actor.dead = true;
 		}
