@@ -7,12 +7,12 @@ export default class DOMActor extends Actor {
 		this.element = document.createElement("div");
 		this.element.classList.add("actor");
 		this.element.classList.add(className);
-		this.parent = null;
+		this.parentElement = null;
 	}
 
-	addToParent(parentElement) {
-		this.parent = parentElement;
-		this.parent.appendChild(this.element);
+	addToParentElement(parentElement) {
+		this.parentElement = parentElement;
+		this.parentElement.appendChild(this.element);
 	}
 
 	draw() {
@@ -23,6 +23,6 @@ export default class DOMActor extends Actor {
 	destroy() {
 		this.dead = true;
 		this.element.remove();
-		this.parent = null;
+		this.parentElement = null;
 	}
 }
