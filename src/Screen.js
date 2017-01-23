@@ -1,5 +1,5 @@
 import Events from "./EventLite";
-import Vector2 from "../Libs/Vexr/Vector2";
+import Vector2 from "./Vector2";
 
 var resizeId;
 
