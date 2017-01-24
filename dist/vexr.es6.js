@@ -544,15 +544,15 @@ class Behavior {
 		return steer;
 	}
 
-	static avoidAll(actor, obstacles, avoidRadius) {
-		var avoidRadius = 80 || avoidRadius;
+	static avoidAll(actor, obstacles, avoidRadius = 80) {
+		var avoidRadius = avoidRadius;
 		var total = new Vector3(0, 0);
 		var count = 0;
-		for (var o in obstacles) {
+		for (var o = 0; o < obstacles.length; o++) {
 			var obstacle = obstacles[o];
 			var distance = Vector3.dist(actor.location, obstacle.location);
-			if ((distance > 0) && (distance < avoidRadius) && actor.me != obstacle.me) {
-				var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.me);
+			if ((distance > 0) && (distance < avoidRadius) && actor.id != obstacle.id) {
+				var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.id);
 				difference.normalize();
 				difference.divide(distance);
 				total.add(difference);
@@ -745,6 +745,7 @@ class DOMActor extends Actor {
 class GameLoop {
 	constructor() {
 		this.gameObjects = [];
+		this.controller = [];
 	}
 
 	setController(inputController) {
@@ -838,7 +839,7 @@ class EventLite {
 }
 
 var resizeId;
-
+var resizeEvent;
 class Screen {
     static get dimensions() {
         return Screen._dimensions;
@@ -846,6 +847,14 @@ class Screen {
     static set dimensions(value) {
         if(Screen._dimensions != value) {
             Screen._dimensions = value;
+        }
+    }
+    static get orientation() {
+        return Screen._orientation;
+    }
+    static set orientation(value) {
+        if(Screen._orientation != value) {
+            Screen._orientation = value;
         }
     }
     static get center() {
@@ -880,21 +889,27 @@ class Screen {
             Screen._anchorPositions = value;
         }
     }
-    
+
     static resize(e) {
         clearTimeout(resizeId);
+        resizeEvent = e;
         resizeId = setTimeout(Screen.recalculate, Screen.resizeDelay);
     }
 
     static recalculate() {
         Screen.dimensions.set(window.innerWidth, window.innerHeight);
+        if(Screen.dimensions.x > Screen.dimensions.y) {
+            Screen.orientation = "landscape";
+        } else {
+            Screen.orientation = "portrait";
+        }
         for(var anchor in Screen.anchors) {
             if(Screen.anchors.hasOwnProperty(anchor)) {
                 Screen.anchorPositions[anchor].set(Screen.anchors[anchor].x * Screen.dimensions.x, Screen.anchors[anchor].y * Screen.dimensions.y);
             }
         }
 
-        EventLite.trigger("resize", Screen.dimensions, Screen.anchorPositions);
+        EventLite.trigger("resize", resizeEvent);
     }
 
     static getAnchor(name) {
@@ -904,8 +919,8 @@ class Screen {
     static setAnchor(name, ratioX, ratioY) {
 
         if(Screen.anchors[name] == undefined) {
-            Screen.anchors[name] = new Vector2(ratioX, ratioY);
-            Screen.anchorPositions[name] = new Vector2(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
+            Screen.anchors[name] = new Vector3(ratioX, ratioY);
+            Screen.anchorPositions[name] = new Vector3(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
         } else {
             Screen.anchors[name].set(ratioX, ratioY);
             Screen.anchorPositions[name].set(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
@@ -920,8 +935,13 @@ class Screen {
         Screen.resizeDelay = 100;
         Screen.anchors = {};
         Screen.anchorPositions = {};
-        Screen.dimensions = new Vector2(window.innerWidth, window.innerHeight);
+        Screen.dimensions = new Vector3(window.innerWidth, window.innerHeight);
         Screen.setAnchor("center", 0.5, 0.5);
+        if(Screen.dimensions.x > Screen.dimensions.y) {
+            Screen.orientation = "landscape";
+        } else {
+            Screen.orientation = "portrait";
+        }
     }
 
 }
@@ -930,7 +950,7 @@ Screen.init();
 class InputController {
 	constructor() {
 		this.keyMap = {};
-		this.mousePos = new Vector2();
+		this.mousePos = new Vector3();
 	}
 
 	bindEvents() {

@@ -895,15 +895,17 @@ var Behavior = function () {
 		}
 	}, {
 		key: "avoidAll",
-		value: function avoidAll(actor, obstacles, avoidRadius) {
-			var avoidRadius = 80 || avoidRadius;
+		value: function avoidAll(actor, obstacles) {
+			var avoidRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 80;
+
+			var avoidRadius = avoidRadius;
 			var total = new Vector3(0, 0);
 			var count = 0;
-			for (var o in obstacles) {
+			for (var o = 0; o < obstacles.length; o++) {
 				var obstacle = obstacles[o];
 				var distance = Vector3.dist(actor.location, obstacle.location);
-				if (distance > 0 && distance < avoidRadius && actor.me != obstacle.me) {
-					var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.me);
+				if (distance > 0 && distance < avoidRadius && actor.id != obstacle.id) {
+					var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.id);
 					difference.normalize();
 					difference.divide(distance);
 					total.add(difference);
@@ -1140,6 +1142,7 @@ var GameLoop = function () {
 		classCallCheck(this, GameLoop);
 
 		this.gameObjects = [];
+		this.controller = [];
 	}
 
 	createClass(GameLoop, [{
@@ -1261,6 +1264,7 @@ var EventLite = function () {
 }();
 
 var resizeId;
+var resizeEvent;
 
 var Screen = function () {
     function Screen() {
@@ -1271,19 +1275,25 @@ var Screen = function () {
         key: "resize",
         value: function resize(e) {
             clearTimeout(resizeId);
+            resizeEvent = e;
             resizeId = setTimeout(Screen.recalculate, Screen.resizeDelay);
         }
     }, {
         key: "recalculate",
         value: function recalculate() {
             Screen.dimensions.set(window.innerWidth, window.innerHeight);
+            if (Screen.dimensions.x > Screen.dimensions.y) {
+                Screen.orientation = "landscape";
+            } else {
+                Screen.orientation = "portrait";
+            }
             for (var anchor in Screen.anchors) {
                 if (Screen.anchors.hasOwnProperty(anchor)) {
                     Screen.anchorPositions[anchor].set(Screen.anchors[anchor].x * Screen.dimensions.x, Screen.anchors[anchor].y * Screen.dimensions.y);
                 }
             }
 
-            EventLite.trigger("resize", Screen.dimensions, Screen.anchorPositions);
+            EventLite.trigger("resize", resizeEvent);
         }
     }, {
         key: "getAnchor",
@@ -1295,8 +1305,8 @@ var Screen = function () {
         value: function setAnchor(name, ratioX, ratioY) {
 
             if (Screen.anchors[name] == undefined) {
-                Screen.anchors[name] = new Vector2(ratioX, ratioY);
-                Screen.anchorPositions[name] = new Vector2(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
+                Screen.anchors[name] = new Vector3(ratioX, ratioY);
+                Screen.anchorPositions[name] = new Vector3(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
             } else {
                 Screen.anchors[name].set(ratioX, ratioY);
                 Screen.anchorPositions[name].set(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
@@ -1314,8 +1324,13 @@ var Screen = function () {
             Screen.resizeDelay = 100;
             Screen.anchors = {};
             Screen.anchorPositions = {};
-            Screen.dimensions = new Vector2(window.innerWidth, window.innerHeight);
+            Screen.dimensions = new Vector3(window.innerWidth, window.innerHeight);
             Screen.setAnchor("center", 0.5, 0.5);
+            if (Screen.dimensions.x > Screen.dimensions.y) {
+                Screen.orientation = "landscape";
+            } else {
+                Screen.orientation = "portrait";
+            }
         }
     }, {
         key: "dimensions",
@@ -1325,6 +1340,16 @@ var Screen = function () {
         set: function set(value) {
             if (Screen._dimensions != value) {
                 Screen._dimensions = value;
+            }
+        }
+    }, {
+        key: "orientation",
+        get: function get() {
+            return Screen._orientation;
+        },
+        set: function set(value) {
+            if (Screen._orientation != value) {
+                Screen._orientation = value;
             }
         }
     }, {
@@ -1378,7 +1403,7 @@ var InputController = function () {
 		classCallCheck(this, InputController);
 
 		this.keyMap = {};
-		this.mousePos = new Vector2();
+		this.mousePos = new Vector3();
 	}
 
 	createClass(InputController, [{

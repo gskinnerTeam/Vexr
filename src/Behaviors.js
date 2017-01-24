@@ -28,11 +28,11 @@ export default class Behavior {
 		return steer;
 	}
 
-	static avoidAll(actor, obstacles, avoidRadius) {
-		var avoidRadius = 80 || avoidRadius;
+	static avoidAll(actor, obstacles, avoidRadius = 80) {
+		var avoidRadius = avoidRadius;
 		var total = new Vector3(0, 0);
 		var count = 0;
-		for (var o in obstacles) {
+		for (var o = 0; o < obstacles.length; o++) {
 			var obstacle = obstacles[o];
 			var distance = Vector3.dist(actor.location, obstacle.location);
 			if ((distance > 0) && (distance < avoidRadius) && actor.id != obstacle.id) {
