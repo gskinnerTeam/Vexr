@@ -35,8 +35,8 @@ export default class Behavior {
 		for (var o in obstacles) {
 			var obstacle = obstacles[o];
 			var distance = Vector3.dist(actor.location, obstacle.location);
-			if ((distance > 0) && (distance < avoidRadius) && actor.me != obstacle.me) {
-				var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.me);
+			if ((distance > 0) && (distance < avoidRadius) && actor.id != obstacle.id) {
+				var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.id);
 				difference.normalize();
 				difference.divide(distance);
 				total.add(difference);
