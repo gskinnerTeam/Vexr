@@ -2,6 +2,10 @@ import Convert from "./Convert";
 
 export default class Vector3 {
 
+	static reset(v) {
+		v.set(0,0,0);
+	}
+
 	static angleBetween(a, b) {
 		var mag = a.magnitude() * b.magnitude();
 		var dot = Vector3.dot(a, b);
