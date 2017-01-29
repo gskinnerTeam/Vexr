@@ -1,59 +1,70 @@
 import Convert from "./Convert";
 import Vector3 from "./Vector3";
-
-
-
+import Pool from "./Pool";
+const key = "bVectors";
+Pool.allocate(Vector3, key, 500, function(item){
+	item.set(0,0,0);
+});
 export default class Behavior {
 	static seek(actor, targetPosition) {
-		var desired = Vector3.subtract(targetPosition, actor.location);
+		var v1 = Pool.getObject(key);
+		var v2 = Pool.getObject(key);
+		var desired = Vector3.subtract(targetPosition, actor.location, v1);
 		desired.normalize();
 		desired.multiply(actor.maxSpeed);
-		var steer = Vector3.subtract(desired, actor.velocity);
+		var steer = Vector3.subtract(desired, actor.velocity, v2);
+		Pool.returnObject(v1);
 		steer.limit(actor.maxForce);
 		return steer;
 	}
 
 	static arrive(actor, target, power = 50) {
-
-		var desired = Vector3.subtract(target, actor.location);
+		var v1 = Pool.getObject(key);
+		var v2 = Pool.getObject(key);
+		var desired = Vector3.subtract(target, actor.location, v1);
 		var dMag = desired.magnitude();
 		desired.normalize();
 		var mappedPower = Convert.MapRange(dMag, 0, power, 0, actor.maxSpeed);
-
 		desired.multiply(mappedPower);
-
-		var steer = Vector3.subtract(desired, actor.velocity);
+		var steer = Vector3.subtract(desired, actor.velocity, v2);
+		Pool.returnObject(desired);
 		steer.limit(actor.maxForce);
-
 		return steer;
 	}
 
 	static avoidAll(actor, obstacles, avoidRadius = 80) {
-		var avoidRadius = avoidRadius;
-		var total = new Vector3(0, 0);
+
+		var v2 = Pool.getObject(key);
+		var total = Pool.getObject(key);
 		var count = 0;
 		for (var o = 0; o < obstacles.length; o++) {
+			var v1 = Pool.getObject(key);
 			var obstacle = obstacles[o];
 			var distance = Vector3.dist(actor.location, obstacle.location);
 			if ((distance > 0) && (distance < avoidRadius) && actor.id != obstacle.id) {
-				var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.id);
+				var difference = Vector3.subtract(actor.location, obstacle.location, v1);
 				difference.normalize();
 				difference.divide(distance);
 				total.add(difference);
 				count++;
 			}
+			Pool.returnObject(v1);
 		}
 		if (count > 0) {
 			total.divide(count);
 			total.normalize();
 			total.multiply(actor.maxSpeed);
 
-			var steer = Vector3.subtract(total, actor.velocity);
+			var steer = Vector3.subtract(total, actor.velocity, v2);
+
 			steer.limit(actor.maxForce);
 
+
+			Pool.returnObject(total);
 			return steer;
 		} else {
-			return new Vector3(0,0,0);
+			Pool.returnObject(total);
+			return v2;
 		}
 	}
 
