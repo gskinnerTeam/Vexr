@@ -2,11 +2,11 @@ import Convert from "./Convert";
 import Vector3 from "./Vector3";
 import Pool from "./Pool";
 const key = "bVectors";
-Pool.allocate(Vector3, key, 500, function(item){
+Pool.allocate(Vector3, key, 50, function(item){
 	item.set(0,0,0);
 });
 export default class Behavior {
-	static seek(actor, targetPosition) {
+	static seek(actor, targetPosition, scaleForce = 1) {
 		var v1 = Pool.getObject(key);
 		var v2 = Pool.getObject(key);
 		var desired = Vector3.subtract(targetPosition, actor.location, v1);
@@ -15,10 +15,12 @@ export default class Behavior {
 		var steer = Vector3.subtract(desired, actor.velocity, v2);
 		Pool.returnObject(v1);
 		steer.limit(actor.maxForce);
-		return steer;
+		steer.multiply(scaleForce);
+		actor.addForce(steer);
+		Pool.returnObject(steer);
 	}
 
-	static arrive(actor, target, power = 50) {
+	static arrive(actor, target, power = 50, scaleForce = 1) {
 		var v1 = Pool.getObject(key);
 		var v2 = Pool.getObject(key);
 		var desired = Vector3.subtract(target, actor.location, v1);
@@ -29,10 +31,12 @@ export default class Behavior {
 		var steer = Vector3.subtract(desired, actor.velocity, v2);
 		Pool.returnObject(desired);
 		steer.limit(actor.maxForce);
-		return steer;
+		steer.multiply(scaleForce);
+		actor.addForce(steer);
+		Pool.returnObject(steer);
 	}
 
-	static avoidAll(actor, obstacles, avoidRadius = 80) {
+	static avoidAll(actor, obstacles, avoidRadius = 80, scaleForce = 1) {
 
 		var v2 = Pool.getObject(key);
 		var total = Pool.getObject(key);
@@ -54,17 +58,12 @@ export default class Behavior {
 			total.divide(count);
 			total.normalize();
 			total.multiply(actor.maxSpeed);
-
 			var steer = Vector3.subtract(total, actor.velocity, v2);
-
 			steer.limit(actor.maxForce);
-
-
+			steer.multiply(scaleForce);
+			actor.addForce(steer);
 			Pool.returnObject(total);
-			return steer;
-		} else {
-			Pool.returnObject(total);
-			return v2;
+			Pool.returnObject(steer);
 		}
 	}
 
