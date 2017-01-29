@@ -1,6 +1,6 @@
 {
   "name": "Vexr",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A 2D Vector and Behavior Library",
   "main": "dist/vexr.cjs.js",
   "jsnext:main": "dist/vexr.es6.js",

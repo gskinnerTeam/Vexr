@@ -174,21 +174,27 @@ class Vector2 {
 
 class Vector3 {
 
+	static reset(v) {
+		v.set(0,0,0);
+	}
+
 	static angleBetween(a, b) {
 		var mag = a.magnitude() * b.magnitude();
 		var dot = Vector3.dot(a, b);
 		return Math.acos(dot / mag);
 	}
 
-	static lerp(a, b, t) {
-		var x = a.x + t * (b.x - a.x);
-		var y = a.y + t * (b.y - a.y);
-		var z = a.z + t * (b.z - a.z);
-		return new Vector3(x, y, z);
+	static lerp(a, b, t, v = new Vector3()) {
+		v.set(
+			a.x + t * (b.x - a.x),
+			a.y + t * (b.y - a.y),
+			a.z + t * (b.z - a.z)
+		);
+		return v;
 	}
 
-	static normalize(vector) {
-		var vec = vector.get();
+	static normalize(vector, v = new Vector3()) {
+		var vec = vector.get(v);
 		vec.normalize();
 		return vec;
 	}
@@ -197,34 +203,36 @@ class Vector3 {
 		return Math.sqrt(Vector3.dot(vector, vector));
 	}
 
-	static add(a, b) {
-		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+	static add(a, b, v = new Vector3()) {
+		v.set(a.x + b.x, a.y + b.y, a.z + b.z);
+		return v;
 	}
 
-	static subtract(a, b) {
-		var n = new Vector3(b.x, b.y, b.z);
-		n.negate();
-		return Vector3.add(a, n);
+	static subtract(a, b, v = new Vector3()) {
+		v.set(a.x - b.x, a.y - b.y, a.z - b.z);
+		return v;
 	}
 
-	static multiply(a, scalar) {
-		return new Vector3(a.x * scalar, a.y * scalar, a.z * scalar);
+	static multiply(a, scalar, v = new Vector3()) {
+		v.set(a.x * scalar, a.y * scalar, a.z * scalar);
+		return v;
 	}
 
-	static divide(a, scalar) {
-		scalar = 1 / scalar;
-		return Vector3.multiply(a, scalar);
+	static divide(a, scalar, v = new Vector3()) {
+		v.set(a.x * scalar, a.y * scalar, a.z * scalar);
+		return v;
 	}
 
 	static dot(a, b) {
 		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
 
-	static cross(a, b) {
-		var x = a.y * b.z - b.y * a.z;
-		var y = a.z * b.x - b.z * a.x;
-		var z = a.x * b.y - b.x * a.y;
-		return new Vector3(x, y, z);
+	static cross(a, b, v = new Vector3()) {
+		v.set(
+			a.y * b.z - b.y * a.z,
+			a.z * b.x - b.z * a.x,
+			a.x * b.y - b.x * a.y);
+		return v;
 	}
 
 
@@ -263,8 +271,9 @@ class Vector3 {
 		this.raw[2] = value;
 	}
 
-	get() {
-		return new Vector3(this.x, this.y, this.z);
+	get(v = new Vector3()) {
+		v.set(this.x, this.y, this.z);
+		return v;
 	}
 
 	set(x=0, y=0, z=0) {
@@ -519,40 +528,160 @@ class Matrix4 {
 
 }
 
+let hexString = "0123456789abcdef";
+
+class Generate {
+
+    static randomHexString(length) {
+        let bytes = "";
+        for(let i = 0; i<length; i++) {
+            bytes += hexString.substr(Math.floor(Math.random()*hexString.length),1);
+        }
+        return bytes;
+    }
+    
+    static UUID () {
+        return `${Generate.randomHexString(7)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(12)}`
+    }
+    
+}
+
+let pools = new Object();
+let objectPool = new Object();
+let usagePool = new Object();
+let clean = new Object();
+
+class Pool {
+
+    static allocate(object, objectKey, number, cleaner = function(item){return item}) {
+
+        if (object.hasOwnProperty("prototype")) {
+            pools[objectKey] = {
+                object: object,
+                objectKey: objectKey,
+                amount: number,
+                cleaner: cleaner
+            };
+            clean[objectKey] = cleaner;
+            usagePool[objectKey] = [];
+            objectPool[objectKey] = [];
+            for (var i = 0; i < number; i++) {
+                var instance = new object();
+                    instance.v_pool_index = i;
+                    instance.v_pool_key = objectKey;
+                usagePool[objectKey][i] = false;
+                objectPool[objectKey][i] = instance;
+            }
+            return objectPool[objectKey];
+        } else {
+            throw new Error("Object must have a constructor");
+        }
+    }
+
+    static deallocate(objectKey, force = false) {
+        if(Pool.referencesInPool(objectKey) == 0 || force == true) {
+            delete clean[objectKey];
+            delete usagePool[objectKey];
+            delete objectPool[objectKey];
+            delete pools[objectKey];
+        } else {
+            console.warn("You still have objects in this pool checked out. Return them and call deallocate. Or use deallocate(key, true) to force deallocation.");
+        }
+    }
+
+    static referencesInPool(objectKey){
+        return pools[objectKey].amount - Pool.poolsize(objectKey);
+    }
+
+    static poolsize(objectKey) {
+        return objectPool[objectKey].filter(Pool.notInUse).length;
+    }
+
+    static inUse(object) {
+        return usagePool[object.v_pool_key][object.v_pool_index];
+    }
+
+    static notInUse(object) {
+        return !usagePool[object.v_pool_key][object.v_pool_index];
+    }
+
+    static returnAll(objectKey) {
+        var objects = objectPool[objectKey].filter(Pool.inUse);
+        for(var i = 0; i < objects.length; i++) {
+            Pool.returnObject(objects[i]);
+        }
+    }
+
+    static getObject(objectKey) {
+        var i = usagePool[objectKey].indexOf(false);
+                usagePool[objectKey][i] = true;
+        if(i > -1) {
+            return objectPool[objectKey][i];
+        } else {
+            throw new Error("Out of objects");
+        }
+    }
+
+    static returnObject(obj) {
+        clean[obj.v_pool_key](obj);
+        usagePool[obj.v_pool_key][obj.v_pool_index] = false;
+    }
+    static returnObjects(objs) {
+        for(var i = 0; i<objs.length; i++) {
+            Pool.returnObject(objs[i]);
+        }
+    }
+    static get Pools () {
+        return pools;
+    }
+
+}
+
+const key = Generate.UUID();
 class Behavior {
-	static seek(actor, targetPosition) {
-		var desired = Vector3.subtract(targetPosition, actor.location);
+	static init () {
+		Pool.allocate(Vector3, key, 10, Vector3.reset);
+	}
+	static seek(actor, targetPosition, scaleForce = 1) {
+		var desired = Pool.getObject(key);
+		var steer = Pool.getObject(key);
+
+		Vector3.subtract(targetPosition, actor.location, desired);
 		desired.normalize();
 		desired.multiply(actor.maxSpeed);
-		var steer = Vector3.subtract(desired, actor.velocity);
+		Vector3.subtract(desired, actor.velocity, steer);
+
 		steer.limit(actor.maxForce);
-		return steer;
+		steer.multiply(scaleForce);
+		actor.addForce(steer);
+
+		Pool.returnObject(desired);
+		Pool.returnObject(steer);
 	}
-
-	static arrive(actor, target, power = 50) {
-
-		var desired = Vector3.subtract(target, actor.location);
-		var dMag = desired.magnitude();
+	static arrive(actor, target, power = 50, scaleForce = 1) {
+		var desired = Pool.getObject(key);
+		var steer = Pool.getObject(key);
+		Vector3.subtract(target, actor.location, desired);
+		var mappedPower = Convert.MapRange(desired.magnitude(), 0, power, 0, actor.maxSpeed);
 		desired.normalize();
-		var mappedPower = Convert.MapRange(dMag, 0, power, 0, actor.maxSpeed);
-
 		desired.multiply(mappedPower);
-
-		var steer = Vector3.subtract(desired, actor.velocity);
+		Vector3.subtract(desired, actor.velocity, steer);
 		steer.limit(actor.maxForce);
-
-		return steer;
+		steer.multiply(scaleForce);
+		actor.addForce(steer);
+		Pool.returnObject(desired);
+		Pool.returnObject(steer);
 	}
-
-	static avoidAll(actor, obstacles, avoidRadius = 80) {
-		var avoidRadius = avoidRadius;
-		var total = new Vector3(0, 0);
+	static avoidAll(actor, obstacles, avoidRadius = 80, scaleForce = 1) {
+		var difference = Pool.getObject(key);
+		var steer = Pool.getObject(key);
+		var total = Pool.getObject(key);
 		var count = 0;
 		for (var o = 0; o < obstacles.length; o++) {
 			var obstacle = obstacles[o];
 			var distance = Vector3.dist(actor.location, obstacle.location);
 			if ((distance > 0) && (distance < avoidRadius) && actor.id != obstacle.id) {
-				var difference = Vector3.subtract(actor.location, obstacle.location, obstacle.id);
+				Vector3.subtract(actor.location, obstacle.location, difference);
 				difference.normalize();
 				difference.divide(distance);
 				total.add(difference);
@@ -563,14 +692,14 @@ class Behavior {
 			total.divide(count);
 			total.normalize();
 			total.multiply(actor.maxSpeed);
-
-			var steer = Vector3.subtract(total, actor.velocity);
+			Vector3.subtract(total, actor.velocity, steer);
 			steer.limit(actor.maxForce);
-
-			return steer;
-		} else {
-			return new Vector3(0,0,0);
+			steer.multiply(scaleForce);
+			actor.addForce(steer);
 		}
+		Pool.returnObject(difference);
+		Pool.returnObject(steer);
+		Pool.returnObject(total);
 	}
 
 	static avoid(actor, target, avoidRadius) {
@@ -645,24 +774,7 @@ class Behavior {
 		}
 	}
 }
-
-let hexString = "0123456789abcdef";
-
-class Generate {
-
-    static randomHexString(length) {
-        let bytes = "";
-        for(let i = 0; i<length; i++) {
-            bytes += hexString.substr(Math.floor(Math.random()*hexString.length),1);
-        }
-        return bytes;
-    }
-    
-    static UUID () {
-        return `${Generate.randomHexString(7)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(12)}`
-    }
-    
-}
+Behavior.init();
 
 class Actor {
 	constructor(className, location = new Vector3(0, 0, 0)) {
@@ -1011,6 +1123,6 @@ class InputController {
 	}
 }
 
-export { Vector2, Vector3, Matrix3, Matrix4, Behavior as Behaviors, Actor, DOMActor, GameLoop, Screen, InputController, EventLite };
+export { Vector2, Vector3, Matrix3, Matrix4, Behavior as Behaviors, Actor, DOMActor, GameLoop, Screen, InputController, EventLite, Pool };
 
 //# sourceMappingURL=vexr.es6.map

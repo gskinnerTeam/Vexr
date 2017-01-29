@@ -9,3 +9,4 @@ export { default as GameLoop } from "./GameLoop";
 export { default as Screen } from "./Screen";
 export { default as InputController } from "./InputController";
 export { default as EventLite } from "./EventLite";
+export { default as Pool } from "./Pool";
