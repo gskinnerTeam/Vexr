@@ -8,15 +8,17 @@ export default class Vector3 {
 		return Math.acos(dot / mag);
 	}
 
-	static lerp(a, b, t) {
-		var x = a.x + t * (b.x - a.x);
-		var y = a.y + t * (b.y - a.y);
-		var z = a.z + t * (b.z - a.z);
-		return new Vector3(x, y, z);
+	static lerp(a, b, t, v = new Vector3()) {
+		v.set(
+			a.x + t * (b.x - a.x),
+			a.y + t * (b.y - a.y),
+			a.z + t * (b.z - a.z)
+		);
+		return v;
 	}
 
-	static normalize(vector) {
-		var vec = vector.get();
+	static normalize(vector, v = new Vector3()) {
+		var vec = vector.get(v);
 		vec.normalize();
 		return vec;
 	}
@@ -25,34 +27,36 @@ export default class Vector3 {
 		return Math.sqrt(Vector3.dot(vector, vector));
 	}
 
-	static add(a, b) {
-		return new Vector3(a.x + b.x, a.y + b.y, a.z + b.z);
+	static add(a, b, v = new Vector3()) {
+		v.set(a.x + b.x, a.y + b.y, a.z + b.z);
+		return v;
 	}
 
-	static subtract(a, b) {
-		var n = new Vector3(b.x, b.y, b.z);
-		n.negate();
-		return Vector3.add(a, n);
+	static subtract(a, b, v = new Vector3()) {
+		v.set(a.x - b.x, a.y - b.y, a.z - b.z);
+		return v;
 	}
 
-	static multiply(a, scalar) {
-		return new Vector3(a.x * scalar, a.y * scalar, a.z * scalar);
+	static multiply(a, scalar, v = new Vector3()) {
+		v.set(a.x * scalar, a.y * scalar, a.z * scalar);
+		return v;
 	}
 
-	static divide(a, scalar) {
-		scalar = 1 / scalar;
-		return Vector3.multiply(a, scalar);
+	static divide(a, scalar, v = new Vector3()) {
+		v.set(a.x * scalar, a.y * scalar, a.z * scalar);
+		return v;
 	}
 
 	static dot(a, b) {
 		return a.x * b.x + a.y * b.y + a.z * b.z;
 	}
 
-	static cross(a, b) {
-		var x = a.y * b.z - b.y * a.z;
-		var y = a.z * b.x - b.z * a.x;
-		var z = a.x * b.y - b.x * a.y;
-		return new Vector3(x, y, z);
+	static cross(a, b, v = new Vector3()) {
+		v.set(
+			a.y * b.z - b.y * a.z,
+			a.z * b.x - b.z * a.x,
+			a.x * b.y - b.x * a.y);
+		return v;
 	}
 
 
@@ -91,8 +95,9 @@ export default class Vector3 {
 		this.raw[2] = value;
 	}
 
-	get() {
-		return new Vector3(this.x, this.y, this.z);
+	get(v = new Vector3()) {
+		v.set(this.x, this.y, this.z);
+		return v;
 	}
 
 	set(x=0, y=0, z=0) {
