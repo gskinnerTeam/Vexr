@@ -19,8 +19,8 @@ export default class Pool {
             objectPool[objectKey] = [];
             for (var i = 0; i < number; i++) {
                 var instance = new object();
-                    instance.index = i;
-                    instance.pool_key = objectKey;
+                    instance.v_pool_index = i;
+                    instance.v_pool_key = objectKey;
                 usagePool[objectKey][i] = false;
                 objectPool[objectKey][i] = instance;
             }
@@ -50,11 +50,11 @@ export default class Pool {
     }
 
     static inUse(object) {
-        return usagePool[object.pool_key][object.index];
+        return usagePool[object.v_pool_key][object.v_pool_index];
     }
 
     static notInUse(object) {
-        return !usagePool[object.pool_key][object.index];
+        return !usagePool[object.v_pool_key][object.v_pool_index];
     }
 
     static returnAll(objectKey) {
@@ -75,8 +75,8 @@ export default class Pool {
     }
 
     static returnObject(obj) {
-        clean[obj.pool_key](obj);
-        usagePool[obj.pool_key][obj.index] = false;
+        clean[obj.v_pool_key](obj);
+        usagePool[obj.v_pool_key][obj.v_pool_index] = false;
     }
     static returnObjects(objs) {
         for(var i = 0; i<objs.length; i++) {

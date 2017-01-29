@@ -27,8 +27,8 @@ describe('Pool Tests', function () {
     });
     it('Object from pool has pool properties set', function () {
         var obj = Pool.getObject("Vector3");
-        assert.equal(obj.pool_key, "Vector3");
-        expect(obj.index).to.be.above(-1);
+        assert.equal(obj.v_pool_key, "Vector3");
+        expect(obj.v_pool_index).to.be.above(-1);
     });
     it('Object poolsize has shrunk', function () {
         var obj = Pool.poolsize("Vector3");
