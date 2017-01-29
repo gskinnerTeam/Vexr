@@ -1,3 +1,4 @@
+let pools = new Object();
 let objectPool = new Object();
 let usagePool = new Object();
 let clean = new Object();
@@ -5,12 +6,17 @@ let clean = new Object();
 export default class Pool {
 
     static allocate(object, objectKey, number, cleaner = function(item){return item}) {
+
         if (object.hasOwnProperty("prototype")) {
-            clean[objectKey] = cleaner;
-            if (!objectPool[objectKey]) {
-                usagePool[objectKey] = [];
-                objectPool[objectKey] = [];
+            pools[objectKey] = {
+                object: object,
+                objectKey: objectKey,
+                amount: number,
+                cleaner: cleaner
             }
+            clean[objectKey] = cleaner;
+            usagePool[objectKey] = [];
+            objectPool[objectKey] = [];
             for (var i = 0; i < number; i++) {
                 var instance = new object();
                     instance.index = i;
@@ -22,6 +28,21 @@ export default class Pool {
         } else {
             throw new Error("Object must have a constructor");
         }
+    }
+
+    static deallocate(objectKey, force = false) {
+        if(Pool.referencesInPool(objectKey) == 0 || force == true) {
+            delete clean[objectKey];
+            delete usagePool[objectKey];
+            delete objectPool[objectKey];
+            delete pools[objectKey]
+        } else {
+            console.warn("You still have objects in this pool checked out. Return them and call deallocate. Or use deallocate(key, true) to force deallocation.");
+        }
+    }
+
+    static referencesInPool(objectKey){
+        return pools[objectKey].amount - Pool.poolsize(objectKey);
     }
 
     static poolsize(objectKey) {
@@ -57,11 +78,13 @@ export default class Pool {
         clean[obj.pool_key](obj);
         usagePool[obj.pool_key][obj.index] = false;
     }
-    s
     static returnObjects(objs) {
         for(var i = 0; i<objs.length; i++) {
             Pool.returnObject(objs[i]);
         }
+    }
+    static get Pools () {
+        return pools;
     }
 
 }

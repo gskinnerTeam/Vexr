@@ -122,11 +122,23 @@ describe('Pool Tests', function () {
 
             var act = new Vexr.Actor();
             var v3 = blah();
-            var v4 = Behaviors.arrive(act,v1, 30);
+            var v4 = Pool.getObject("Vector3");
+                v3.add(v4);
+                act.addForce(v4);
             Pool.returnObjects([v1, v2, v3, v4]);
         }
-        console.log(Pool.poolsize("Vector3"));
         assert.equal(Pool.poolsize("Vector3"), 50);
 
     });
+
+    it('Deallocate Pool', function () {
+        assert.equal(Pool.Pools["Vector3"].amount, 50);
+        Pool.deallocate("Vector3");
+
+        expect(function() {
+            Pool.poolsize("Vector3");
+
+        }).to.throw(/undefined/);
+    });
+    
 });
