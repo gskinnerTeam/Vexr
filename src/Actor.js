@@ -2,7 +2,7 @@ import Vector3 from "./Vector3";
 import Generate from "./Generate";
 
 export default class Actor {
-	constructor(className, location = new Vector3(0, 0, 0)) {
+	constructor(className = "Actor", location = new Vector3(0, 0, 0)) {
 		this.type = className;
 		this.active = true;
 		this.visible = true;
@@ -14,8 +14,6 @@ export default class Actor {
 		this.angle = 0;
 		this.maxSpeed = 15;
 		this.maxForce = 1;
-		this.parent = null;
-		this.children = [];
 	}
 
 	addForce(vector) {
@@ -47,8 +45,5 @@ export default class Actor {
 
 	destroy() {
 		this.dead = true;
-		for(let i = 0; i<this.children.length; i++) {
-			this.children[i].destroy();
-		}
 	}
 }
