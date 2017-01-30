@@ -1123,6 +1123,6 @@ class InputController {
 	}
 }
 
-export { Vector2, Vector3, Matrix3, Matrix4, Behavior as Behaviors, Actor, DOMActor, GameLoop, Screen, InputController, EventLite, Pool };
+export { Vector2, Vector3, Matrix3, Matrix4, Behavior as Behaviors, Actor, DOMActor, GameLoop, Screen, InputController, EventLite, Pool, Pool as Convert };
 
 //# sourceMappingURL=vexr.es6.map

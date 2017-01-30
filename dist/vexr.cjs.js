@@ -1644,5 +1644,6 @@ exports.Screen = Screen;
 exports.InputController = InputController;
 exports.EventLite = EventLite;
 exports.Pool = Pool;
+exports.Convert = Pool;
 
 //# sourceMappingURL=vexr.cjs.map

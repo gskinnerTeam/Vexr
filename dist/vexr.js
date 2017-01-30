@@ -886,8 +886,8 @@ var Generate = function () {
     }
 
     createClass(Generate, null, [{
-        key: "randomHexString",
-        value: function randomHexString(length) {
+        key: "RandomHexString",
+        value: function RandomHexString(length) {
             var bytes = "";
             for (var i = 0; i < length; i++) {
                 bytes += hexString.substr(Math.floor(Math.random() * hexString.length), 1);
@@ -897,7 +897,7 @@ var Generate = function () {
     }, {
         key: "UUID",
         value: function UUID() {
-            return Generate.randomHexString(7) + "-" + Generate.randomHexString(4) + "-" + Generate.randomHexString(4) + "-" + Generate.randomHexString(4) + "-" + Generate.randomHexString(4) + "-" + Generate.randomHexString(12);
+            return Generate.RandomHexString(8) + "-" + Generate.RandomHexString(4) + "-" + Generate.RandomHexString(4) + "-" + Generate.RandomHexString(4) + "-" + Generate.RandomHexString(12);
         }
     }]);
     return Generate;
@@ -1194,7 +1194,8 @@ var Behavior = function () {
 Behavior.init();
 
 var Actor = function () {
-	function Actor(className) {
+	function Actor() {
+		var className = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "Actor";
 		var location = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector3(0, 0, 0);
 		classCallCheck(this, Actor);
 
@@ -1209,8 +1210,6 @@ var Actor = function () {
 		this.angle = 0;
 		this.maxSpeed = 15;
 		this.maxForce = 1;
-		this.parent = null;
-		this.children = [];
 	}
 
 	createClass(Actor, [{
@@ -1247,9 +1246,6 @@ var Actor = function () {
 		key: "destroy",
 		value: function destroy() {
 			this.dead = true;
-			for (var i = 0; i < this.children.length; i++) {
-				this.children[i].destroy();
-			}
 		}
 	}]);
 	return Actor;
@@ -1643,6 +1639,8 @@ exports.Screen = Screen;
 exports.InputController = InputController;
 exports.EventLite = EventLite;
 exports.Pool = Pool;
+exports.Convert = Convert;
+exports.Generate = Generate;
 
 }((this.Vexr = this.Vexr || {})));
 
