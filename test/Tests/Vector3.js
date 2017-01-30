@@ -3,8 +3,7 @@ function errorTolerance(error, tolerance) {
 	return Math.abs(error) <= tolerance;
 }
 
-// karma puts the Vexr global module in the test environment.
-var Vector3 = Vexr.Vector3;
+
 describe('Vector3 Methods', function () {
 	describe('New Vector3()', function () {
 		it('New Vector should be zero', function () {
@@ -126,7 +125,7 @@ describe('Vector3 Methods', function () {
 			var vec = new Vector3(10, 10, 10);
 
 			vec.normalize();
-
+			console.log(vec)
 			assert.equal(0.5773502691896257, vec.x);
 			assert.equal(0.5773502691896257, vec.y);
 			assert.equal(0.5773502691896257, vec.z);
@@ -160,22 +159,7 @@ describe('Vector3 Methods', function () {
 			assert.equal(10, vec.z);
 		});
 	});
-	describe('Static Converters', function () {
-		it("Static Vector degreesToRadians", function () {
-			var radians = 0.017453292519943295;
-			for (var i = 0; i < 360; i++) {
-				var radian = Vector3.degreesToRadians(i);
-				assert.equal(i * radians, radian);
-			}
-		});
-		it("Static Vector radiansToDegrees", function () {
-			var radian = 0.017453292519943295;
-			for (var i = 0; i < 360; i++) {
-				var degree = Vector3.radiansToDegrees(radian * i);
-				assert.equal(i, Math.round(degree));
-			}
-		});
-	});
+
 	describe('Static Vector Methods', function () {
 		it("Add Two Vectors", function () {
 			var vec1 = new Vector3(5,0, 2.5);
@@ -327,24 +311,5 @@ describe('Vector3 Methods', function () {
 			}
 
 		});
-		it('Map', function () {
-
-			for(var i = 0; i < 10; i++) {
-				var value = Vector3.map(i, 0, 10, 0, 100);
-				assert.equal(value, i*10);
-			}
-
-			for(var i = 0; i < 10; i++) {
-				var value = Vector3.map(i, 0, 10, 0, 10);
-				assert.equal(value, i);
-			}
-
-			for(var i = 0; i < 10; i++) {
-				var value = Vector3.map(i, 0, 10, 0, 350);
-				assert.equal(value, i*35);
-			}
-
-		});
 	});
-
 });

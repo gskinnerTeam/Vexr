@@ -10,3 +10,5 @@ export { default as Screen } from "./Screen";
 export { default as InputController } from "./InputController";
 export { default as EventLite } from "./EventLite";
 export { default as Pool } from "./Pool";
+export { default as Convert } from "./Convert";
+export { default as Generate } from "./Generate";
