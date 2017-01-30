@@ -2,7 +2,7 @@ let hexString = "0123456789abcdef";
 
 export default class Generate {
 
-    static randomHexString(length) {
+    static RandomHexString(length) {
         let bytes = "";
         for(let i = 0; i<length; i++) {
             bytes += hexString.substr(Math.floor(Math.random()*hexString.length),1);
@@ -11,7 +11,7 @@ export default class Generate {
     }
     
     static UUID () {
-        return `${Generate.randomHexString(7)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(4)}-${Generate.randomHexString(12)}`
+        return `${Generate.RandomHexString(8)}-${Generate.RandomHexString(4)}-${Generate.RandomHexString(4)}-${Generate.RandomHexString(4)}-${Generate.RandomHexString(12)}`
     }
     
 }
