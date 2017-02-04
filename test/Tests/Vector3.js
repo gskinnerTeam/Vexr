@@ -1,5 +1,5 @@
 function errorTolerance(error, tolerance) {
-	tolerance = tolerance || 2.1316282072803006e-14;
+	tolerance = tolerance || 1.79482314566215e-8;
 	return Math.abs(error) <= tolerance;
 }
 
@@ -16,6 +16,7 @@ describe('Vector3 Methods', function () {
 	describe('New Vector3(1,2,3)', function () {
 		it('New Vector should be x = 1, y = 2, z = 3', function () {
 			var vec = new Vector3(1, 2, 3);
+			console.log(vec, vec.x == 1, vec.y == 2, vec.z == 3);
 			assert.equal(1, vec.x);
 			assert.equal(2, vec.y);
 			assert.equal(3, vec.z);
@@ -125,34 +126,35 @@ describe('Vector3 Methods', function () {
 			var vec = new Vector3(10, 10, 10);
 
 			vec.normalize();
-			console.log(vec)
-			assert.equal(0.5773502691896257, vec.x);
-			assert.equal(0.5773502691896257, vec.y);
-			assert.equal(0.5773502691896257, vec.z);
+			console.log(vec.magnitude());
+			assert.equal(0.5773502588272095, vec.x);
+			assert.equal(0.5773502588272095, vec.y);
+			assert.equal(0.5773502588272095, vec.z);
 		});
 		it('Normalized Vector Magnitude Should Equal 1', function () {
 			for (var i = 0; i < 10000; i++) {
 				var vec = new Vector3(Math.random() * 1000, Math.random() * 1000, Math.random() * 1000);
 				vec.normalize();
-				assert.equal(1, errorTolerance(vec.magnitude() - 1));
+				assert.equal(Math.round(vec.magnitude()*10),10);
 			}
 		});
 		it('Random Normalized Vector Magnitude Is Within Tolerance for 50000 vectors ( <= 2.1316282072803006e-14 )', function () {
 			for (var i = 0; i < 100000; i++) {
 				var vec = new Vector3(25000 - (Math.random() * 50000), 25000 - (Math.random() * 50000),  25000 - (Math.random() * 50000));
 				vec.normalize();
-				assert.equal(true, errorTolerance(vec.magnitude() - 1));
+				assert.equal(Math.round(vec.magnitude()*10),10);
 			}
 		});
 		it('Normalized Vector Operations', function () {
 			var vec = new Vector3(10, 10, 10);
 			var vecMag = vec.magnitude();
-			assert.equal(14.142135623730951, vecMag);
+			assert.equal(17.320508075688775, vecMag);
 			vec.normalize();
-			assert.equal(0.7071067811865475, vec.x);
-			assert.equal(0.7071067811865475, vec.y);
-			assert.equal(0.7071067811865475, vec.z);
-			assert.equal(true, errorTolerance(vec.magnitude() - 1));
+			assert.equal(0.5773502588272095, vec.x);
+			assert.equal(0.5773502588272095, vec.y);
+			assert.equal(0.5773502588272095, vec.z);
+			assert.equal(10, Math.round(vec.magnitude()*10));
+			console.log(Math.round(vec.magnitude()*10));
 			vec.multiply(vecMag);
 			assert.equal(10, vec.x);
 			assert.equal(10, vec.y);
@@ -195,12 +197,20 @@ describe('Vector3 Methods', function () {
 			var vec1 = new Vector3(2, 5, 2);
 			var vec3 = new Vector3(5, 2, 5);
 			var added = Vector3.dot(vec1, vec3);
-			assert.equal(24, added);
+			assert.equal(30, added);
+		});
+		it("Cross Two Vectors", function () {
+			var vec1 = new Vector3(2, 5, 2);
+			var vec3 = new Vector3(5, 2, 5);
+			var added = Vector3.cross(vec1, vec3);
+			assert.equal(21, added.x);
+			assert.equal(0, added.y);
+			assert.equal(-21, added.z);
 		});
 		it("Normalize a Vector", function () {
 			var vec1 = new Vector3(10, 5, 5);
 			var vec3 = Vector3.normalize(vec1);
-			assert.equal(true, errorTolerance(vec3.magnitude()-1));
+			assert.equal(10, Math.round(vec3.magnitude()*10));
 		});
 		it("Distance between Two Vectors", function () {
 			var vec1 = new Vector3(1,0);
@@ -220,39 +230,39 @@ describe('Vector3 Methods', function () {
 			var vec1 = new Vector3(1,0);
 			var vec3 = new Vector3(-1,0);
 			var angle = Vector3.angleBetween(vec1, vec3);
-			var degrees = Vector3.radiansToDegrees(angle);
+			var degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(180, degrees);
 
 			vec1 = new Vector3(1,1);
 			vec3 = new Vector3(0,1);
 			angle = Vector3.angleBetween(vec1, vec3);
-			degrees = Vector3.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(45, Math.round(degrees));
 
 			vec1 = new Vector3(1,1);
 			vec3 = new Vector3(0,-1);
 			angle = Vector3.angleBetween(vec1, vec3);
-			degrees = Vector3.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(135, Math.round(degrees));
 
 			vec1 = new Vector3(1,1);
 			vec3 = vec1.get();
 			angle = Vector3.angleBetween(vec1, vec3);
-			degrees = Vector3.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(0, Math.round(degrees));
 
 			vec1 = new Vector3(1,1);
 			vec3 = vec1.get();
 			vec3.rotate(1);
 			angle = Vector3.angleBetween(vec1, vec3);
-			degrees = Vector3.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(1, Math.round(degrees));
 
 			vec1 = new Vector3(1,1);
 			vec3 = vec1.get();
 			vec3.rotate(90);
 			angle = Vector3.angleBetween(vec1, vec3);
-			degrees = Vector3.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(90, Math.round(degrees));
 		});
 	});
@@ -267,7 +277,8 @@ describe('Vector3 Methods', function () {
 			for (var i = 0; i < 360; i++) {
 				vec.rotate(-1, vec3, true); // stabilize the vector as we rotate it;
 			}
-			assert.equal(true, errorTolerance(vec.x - 10));
+			console.log(vec);
+			assert.equal(1000, Math.round(vec.x*100));
 		});
 		it("Rotate Vector 180 degrees, X should equal -10", function () {
 			var vec = new Vector3(10, 0);
@@ -282,7 +293,7 @@ describe('Vector3 Methods', function () {
 		it("Rotate Vector 45 degrees", function () {
 			var vec = new Vector3(10, 0);
 			vec.rotate(45);
-			assert.equal(7.0710678118654755, vec.x);
+			assert.equal(7.071067810058594, vec.x);
 		});
 		it("Rotate Vector 180 degrees", function () {
 			var vec = new Vector3(1, 0);

@@ -14,9 +14,9 @@ export default class Vector3 {
 
 	static lerp(a, b, t, v = new Vector3()) {
 		v.set(
-			a.x + t * (b.x - a.x),
-			a.y + t * (b.y - a.y),
-			a.z + t * (b.z - a.z)
+			a.raw[0] + t * (b.raw[0] - a.raw[0]),
+			a.raw[1] + t * (b.raw[1] - a.raw[1]),
+			a.raw[2] + t * (b.raw[2] - a.raw[2])
 		);
 		return v;
 	}
@@ -32,47 +32,52 @@ export default class Vector3 {
 	}
 
 	static add(a, b, v = new Vector3()) {
-		v.set(a.x + b.x, a.y + b.y, a.z + b.z);
+		v.set(a.raw[0] + b.raw[0], a.raw[1] + b.raw[1], a.raw[2] + b.raw[2]);
 		return v;
 	}
 
 	static subtract(a, b, v = new Vector3()) {
-		v.set(a.x - b.x, a.y - b.y, a.z - b.z);
+		v.set(a.raw[0] - b.raw[0], a.raw[1] - b.raw[1], a.raw[2] - b.raw[2]);
 		return v;
 	}
 
 	static multiply(a, scalar, v = new Vector3()) {
-		v.set(a.x * scalar, a.y * scalar, a.z * scalar);
+		v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
 		return v;
 	}
 
 	static divide(a, scalar, v = new Vector3()) {
-		v.set(a.x * scalar, a.y * scalar, a.z * scalar);
+		scalar = 1/scalar;
+		v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
 		return v;
 	}
 
 	static dot(a, b) {
-		return a.x * b.x + a.y * b.y + a.z * b.z;
+		return a.raw[0] * b.raw[0] + a.raw[1] * b.raw[1] + a.raw[2] * b.raw[2];
 	}
 
 	static cross(a, b, v = new Vector3()) {
 		v.set(
-			a.y * b.z - b.y * a.z,
-			a.z * b.x - b.z * a.x,
-			a.x * b.y - b.x * a.y);
+			a.raw[1] * b.raw[2] - b.raw[1] * a.raw[2],
+			a.raw[2] * b.raw[0] - b.raw[2] * a.raw[0],
+			a.raw[0] * b.raw[1] - b.raw[0] * a.raw[1]);
 		return v;
 	}
 
 
 	static dist(a, b) {
-		var vec1 = a.x - b.x;
-		var vec2 = a.y - b.y;
-		var vec3 = a.z - b.z;
+		var vec1 = a.raw[0] - b.raw[0];
+		var vec2 = a.raw[1] - b.raw[1];
+		var vec3 = a.raw[2] - b.raw[2];
 		return Math.sqrt((vec1 * vec1) + (vec2 * vec2) + (vec3 * vec3));
 	}
 
-	constructor(x = 0, y = 0, z = 0) {
-		this.raw = [x,y,z];
+	constructor(x = 0, y = 0, z = 0, w = 0) {
+		this.raw = new Float32Array(4);
+		this.raw[0] = x;
+		this.raw[1] = y;
+		this.raw[2] = z;
+		this.raw[3] = w;
 	}
 
 	get x () {
@@ -99,61 +104,62 @@ export default class Vector3 {
 		this.raw[2] = value;
 	}
 
+	get w() {
+		return this.raw[3];
+	}
+	set w(value) {
+		this.raw[3] = value;
+	}
+
 	get(v = new Vector3()) {
-		v.set(this.x, this.y, this.z);
+		v.set(this.raw[0], this.raw[1], this.raw[2], this.raw[3]);
 		return v;
 	}
 
-	set(x=0, y=0, z=0) {
-		this.x = x;
-		this.y = y;
-		this.z = z;
+	set(x=0, y=0, z=0, w=0) {
+		this.raw[0] = x;
+		this.raw[1] = y;
+		this.raw[2] = z;
+		this.raw[3] = w;
 	}
 
 	multiply(scalar) {
-		this.x = this.x * scalar;
-		this.y = this.y * scalar;
-		this.z = this.z* scalar;
+		Vector3.multiply(this, scalar, this);
 	}
 
 	add(v) {
-		this.x = this.x + v.x;
-		this.y = this.y + v.y;
-		this.z = this.z + v.z;
+		Vector3.add(this, v, this);
 	}
 
 	subtract(v) {
-		var n = new Vector3(v.x, v.y, v.z);
-		n.negate();
-		this.add(n);
+		Vector3.subtract(this, v, this);
 	}
 
 	divide(scalar) {
-		scalar = 1 / scalar;
-		this.multiply(scalar)
+		Vector3.divide(this, scalar, this);
 	}
 
 	negate() {
-		this.x = -this.x;
-		this.y = -this.y;
-		this.z = -this.z;
+		this.raw[0] = -this.raw[0];
+		this.raw[1] = -this.raw[1];
+		this.raw[2] = -this.raw[2];
 	}
 
 	clamp(limit) {
-		if (this.x > limit) {
-			this.x = limit;
-		} else if (this.x < 0 && this.x < limit) {
-			this.x = -limit;
+		if (this.raw[0] > limit) {
+			this.raw[0] = limit;
+		} else if (this.raw[0] < 0 && this.raw[0] < limit) {
+			this.raw[0] = -limit;
 		}
-		if (this.y > limit) {
-			this.y = limit;
-		} else if (this.y < 0 && this.y < limit) {
-			this.y = -limit;
+		if (this.raw[1] > limit) {
+			this.raw[1] = limit;
+		} else if (this.raw[1] < 0 && this.raw[1] < limit) {
+			this.raw[1] = -limit;
 		}
-		if (this.z > limit) {
-			this.z = limit;
-		} else if (this.z < 0 && this.z < limit) {
-			this.z = -limit;
+		if (this.raw[2] > limit) {
+			this.raw[2] = limit;
+		} else if (this.raw[2] < 0 && this.raw[2] < limit) {
+			this.raw[2] = -limit;
 		}
 	}
 
@@ -166,11 +172,11 @@ export default class Vector3 {
 
 	rotate(degrees, pivotVector = new Vector3(), stabilize = false) {
 		var mag = this.magnitude();
-		var rads = Convert.degreesToRadians(degrees);
+		var rads = Convert.DegreesToRadians(degrees);
 		var cosineAngle = Math.cos(rads);
 		var sineAngle = Math.sin(rads);
-		this.x = (cosineAngle * (this.x - pivotVector.x)) + (sineAngle * (this.y - pivotVector.y)) + pivotVector.x;
-		this.y = (cosineAngle * (this.y - pivotVector.y)) - (sineAngle * (this.x - pivotVector.x)) + pivotVector.y;
+		this.raw[0] = (cosineAngle * (this.raw[0] - pivotVector.x)) + (sineAngle * (this.raw[1] - pivotVector.y)) + pivotVector.x;
+		this.raw[1] = (cosineAngle * (this.raw[1] - pivotVector.y)) - (sineAngle * (this.raw[0] - pivotVector.x)) + pivotVector.y;
 		if (stabilize) {
 			this.normalize();
 			this.multiply(mag);
