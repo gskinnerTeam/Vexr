@@ -17,48 +17,49 @@ describe('Actor', function () {
         assert.equal(actor.maxSpeed, 15);
         assert.equal(actor.maxForce, 1);
     });
-    it("Adding a force applies it to acceleration", function(){
-        for(var i = 0; i < 1000; i++) {
+    it("Adding a force applies it to acceleration", function () {
+        for (var i = 0; i < 1000; i++) {
             var actor = new Actor();
-            var accel = Math.random() * 1000;
+            var accel = new Float32Array([Math.random() * 1000]);
+            accel = accel[0];
             var v = new Vector3(accel, accel, accel);
             actor.addForce(v);
-            assert.equal(actor.acceleration.x, accel);
-            assert.equal(actor.acceleration.y, accel);
-            assert.equal(actor.acceleration.z, accel);
+            assert.equal(Math.abs(actor.acceleration.x), Math.abs(accel));
+            assert.equal(Math.abs(actor.acceleration.y), Math.abs(accel));
+            assert.equal(Math.abs(actor.acceleration.z), Math.abs(accel));
         }
     });
-    it("Updating applies acceleration and resets", function(){
-        for(var i = 0; i < 1000; i++) {
+    it("Updating applies acceleration and resets", function () {
+        for (var i = 0; i < 1000; i++) {
             var actor = new Actor();
-            var accel = Math.random() * 1000;
+            var accel = Math.round(Math.random() * 1000);
             var v = new Vector3(accel, accel, accel);
             actor.addForce(v);
             actor.update(v);
-            assert.equal(actor.velocity.x, accel);
-            assert.equal(actor.velocity.y, accel);
-            assert.equal(actor.velocity.z, accel);
-            assert.equal(actor.location.x, accel);
-            assert.equal(actor.location.y, accel);
-            assert.equal(actor.location.z, accel);
+            assert.equal(Math.abs(actor.velocity.x), Math.abs(accel));
+            assert.equal(Math.abs(actor.velocity.y), Math.abs(accel));
+            assert.equal(Math.abs(actor.velocity.z), Math.abs(accel));
+            assert.equal(Math.abs(actor.location.x), Math.abs(accel));
+            assert.equal(Math.abs(actor.location.y), Math.abs(accel));
+            assert.equal(Math.abs(actor.location.z), Math.abs(accel));
             assert.equal(actor.acceleration.x, 0);
             assert.equal(actor.acceleration.y, 0);
             assert.equal(actor.acceleration.z, 0);
         }
     });
-    it("Parameters get set", function(){
-        for(var i = 0; i < 1000; i++) {
+    it("Parameters get set", function () {
+        for (var i = 0; i < 1000; i++) {
             var name = Generate.UUID();
-            var accel = Math.random() * 1000;
-            var actor = new Actor(name, new Vector3(accel, accel, accel));
-            assert.equal(actor.location.x, accel);
-            assert.equal(actor.location.y, accel);
-            assert.equal(actor.location.z, accel);
+            var accel = new Float32Array([Math.round(Math.random() * 1000)]);
+            var actor = new Actor(name, new Vector3(accel[0], accel[0], accel[0]));
+            assert.equal(actor.location.x, accel[0]);
+            assert.equal(actor.location.y, accel[0]);
+            assert.equal(actor.location.z, accel[0]);
             assert.equal(actor.type, name);
         }
     });
-    it("Destroy Sets this.dead to true for self and all it's children", function(){
-        for(var i = 0; i < 1000; i++) {
+    it("Destroy Sets this.dead to true for self and all it's children", function () {
+        for (var i = 0; i < 1000; i++) {
             var actor = new Actor();
             assert.equal(actor.dead, false);
             actor.destroy();
