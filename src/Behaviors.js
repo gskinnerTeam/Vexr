@@ -5,7 +5,7 @@ import Pool from "./Pool";
 const key = Generate.UUID();
 export default class Behavior {
 	static init () {
-		Pool.allocate(Vector3, key, 10, Vector3.reset);
+		Pool.allocate(Vector3, key, Vector3.reset);
 	}
 	static seek(actor, targetPosition, scaleForce = 1) {
 		var desired = Pool.getObject(key);
