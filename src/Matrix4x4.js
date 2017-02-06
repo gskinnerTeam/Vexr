@@ -1,10 +1,16 @@
+import Vector3 from "./Vector3";
+
 export default class Matrix4 {
 
-    constructor (array = new Float32Array([1,0,0,0,
-        0,1,0,0,
-        0,0,1,0,
-        0,0,0,1])) {
+    constructor (array = Matrix4.identity()) {
         this.setMatrix(array);
+    }
+
+    static identity() {
+        return new Float32Array([1,0,0,0,
+			0,1,0,0,
+			0,0,1,0,
+			0,0,0,1])
     }
 
     setMatrix (array) {
@@ -73,5 +79,22 @@ export default class Matrix4 {
     multiply(matrix) {
         Matrix4.multiply(this, matrix, this);
     }
+
+    static multiplyVector (v3, matrix, v = new Vector3()) {
+		v.set(
+            matrix[0]*v3.raw[0], matrix[1]*v3.raw[1], matrix[2]*v3.raw[2], matrix[3]*v3.raw[3],
+			matrix[4]*v3.raw[0], matrix[5]*v3.raw[1], matrix[6]*v3.raw[2], matrix[7]*v3.raw[3],
+			matrix[8]*v3.raw[0], matrix[9]*v3.raw[1], matrix[10]*v3.raw[2], matrix[11]*v3.raw[3],
+		    matrix[12]*v3.raw[0], matrix[13]*v3.raw[1], matrix[14]*v3.raw[2], matrix[15]*v3.raw[3],
+        );
+		return v;
+    }
+
+    static translate(v3) {
+
+
+    }
+
+    static scale(v3) {}
 
 }
