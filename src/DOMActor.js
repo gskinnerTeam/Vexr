@@ -1,3 +1,4 @@
+import Vector2 from "./Vector2";
 import Actor from "./Actor";
 
 export default class DOMActor extends Actor {
