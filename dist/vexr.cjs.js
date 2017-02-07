@@ -232,6 +232,11 @@ var set$1 = function set$1(object, property, value, receiver) {
   return value;
 };
 
+/**
+ * Small library of converters needed for the various Vexr operations
+ * @class Convert
+ */
+
 var Convert = function () {
     function Convert() {
         classCallCheck(this, Convert);
@@ -239,14 +244,38 @@ var Convert = function () {
 
     createClass(Convert, null, [{
         key: "RadiansToDegrees",
+
+        /**
+         * @static RadiansToDegrees() returns degrees you pass in as radians
+         * @param radians {number}
+         * @returns {number}
+         */
         value: function RadiansToDegrees(radians) {
             return radians * (180 / Math.PI);
         }
+
+        /**
+         * @static DegreesToRadians() returns returns radians you pass in as degrees
+         * @param degrees {number}
+         * @returns {number}
+         */
+
     }, {
         key: "DegreesToRadians",
         value: function DegreesToRadians(degrees) {
             return degrees * (Math.PI / 180);
         }
+
+        /**
+         * MapRange takes a set of values and maps another set of values to that range.
+         * @param value {number}
+         * @param bottomA {number}
+         * @param topA {number}
+         * @param bottomB {number}
+         * @param topB {number}
+         * @returns {number}
+         */
+
     }, {
         key: "MapRange",
         value: function MapRange(value, bottomA, topA, bottomB, topB) {
@@ -451,240 +480,435 @@ var Vector2 = function () {
 }();
 
 var Vector3 = function () {
-	createClass(Vector3, null, [{
-		key: "reset",
-		value: function reset(v) {
-			v.set(0, 0, 0);
-		}
-	}, {
-		key: "angleBetween",
-		value: function angleBetween(a, b) {
-			var mag = a.magnitude() * b.magnitude();
-			var dot = Vector3.dot(a, b);
-			return Math.acos(dot / mag);
-		}
-	}, {
-		key: "lerp",
-		value: function lerp(a, b, t) {
-			var v = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new Vector3();
+    createClass(Vector3, null, [{
+        key: "reset",
 
-			v.set(a.x + t * (b.x - a.x), a.y + t * (b.y - a.y), a.z + t * (b.z - a.z));
-			return v;
-		}
-	}, {
-		key: "normalize",
-		value: function normalize(vector) {
-			var v = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector3();
 
-			var vec = vector.get(v);
-			vec.normalize();
-			return vec;
-		}
-	}, {
-		key: "magnitude",
-		value: function magnitude(vector) {
-			return Math.sqrt(Vector3.dot(vector, vector));
-		}
-	}, {
-		key: "add",
-		value: function add(a, b) {
-			var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+        /**
+         * Resets the supplied Vector to 0.
+         * @param v {Vector3}
+         * @static
+         */
+        value: function reset(v) {
+            v.set(0, 0, 0, 0);
+        }
 
-			v.set(a.x + b.x, a.y + b.y, a.z + b.z);
-			return v;
-		}
-	}, {
-		key: "subtract",
-		value: function subtract(a, b) {
-			var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+        /**
+         * angleBetween() gets the angle between two vectors
+         * @param a {Vector3}
+         * @param b {Vector3}
+         * @returns {number}
+         * @static
+         */
 
-			v.set(a.x - b.x, a.y - b.y, a.z - b.z);
-			return v;
-		}
-	}, {
-		key: "multiply",
-		value: function multiply(a, scalar) {
-			var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+    }, {
+        key: "angleBetween",
+        value: function angleBetween(a, b) {
+            var mag = a.magnitude() * b.magnitude();
+            var dot = Vector3.dot(a, b);
+            return Math.acos(dot / mag);
+        }
 
-			v.set(a.x * scalar, a.y * scalar, a.z * scalar);
-			return v;
-		}
-	}, {
-		key: "divide",
-		value: function divide(a, scalar) {
-			var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+        /**
+         * Linear interpolation between two vector locations
+         * @param a {Vector3} Starting point
+         * @param b {Vector3} Ending point
+         * @param t {number} The ratio between the two points 0: Start. 1: End.
+         * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+         * @returns {Vector3}
+         * @static
+         */
 
-			v.set(a.x * scalar, a.y * scalar, a.z * scalar);
-			return v;
-		}
-	}, {
-		key: "dot",
-		value: function dot(a, b) {
-			return a.x * b.x + a.y * b.y + a.z * b.z;
-		}
-	}, {
-		key: "cross",
-		value: function cross(a, b) {
-			var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+    }, {
+        key: "lerp",
+        value: function lerp(a, b, t) {
+            var v = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : new Vector3();
 
-			v.set(a.y * b.z - b.y * a.z, a.z * b.x - b.z * a.x, a.x * b.y - b.x * a.y);
-			return v;
-		}
-	}, {
-		key: "dist",
-		value: function dist(a, b) {
-			var vec1 = a.x - b.x;
-			var vec2 = a.y - b.y;
-			var vec3 = a.z - b.z;
-			return Math.sqrt(vec1 * vec1 + vec2 * vec2 + vec3 * vec3);
-		}
-	}]);
+            v.set(a.raw[0] + t * (b.raw[0] - a.raw[0]), a.raw[1] + t * (b.raw[1] - a.raw[1]), a.raw[2] + t * (b.raw[2] - a.raw[2]));
+            return v;
+        }
 
-	function Vector3() {
-		var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-		var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-		var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
-		classCallCheck(this, Vector3);
+        /**
+         * Normalize a Vector
+         * @param vector {Vector3}
+         * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+         * @returns {Vector3}
+         * @static
+         */
 
-		this.raw = [x, y, z];
-	}
+    }, {
+        key: "normalize",
+        value: function normalize(vector) {
+            var v = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector3();
 
-	createClass(Vector3, [{
-		key: "get",
-		value: function get() {
-			var v = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Vector3();
+            var vec = vector.get(v);
+            vec.normalize();
+            return vec;
+        }
 
-			v.set(this.x, this.y, this.z);
-			return v;
-		}
-	}, {
-		key: "set",
-		value: function set() {
-			var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
-			var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
-			var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+        /**
+         * Get the Magnitude of a vector
+         * @param vector {Vector3}
+         * @returns {number}
+         * @static
+         */
 
-			this.x = x;
-			this.y = y;
-			this.z = z;
-		}
-	}, {
-		key: "multiply",
-		value: function multiply(scalar) {
-			this.x = this.x * scalar;
-			this.y = this.y * scalar;
-			this.z = this.z * scalar;
-		}
-	}, {
-		key: "add",
-		value: function add(v) {
-			this.x = this.x + v.x;
-			this.y = this.y + v.y;
-			this.z = this.z + v.z;
-		}
-	}, {
-		key: "subtract",
-		value: function subtract(v) {
-			var n = new Vector3(v.x, v.y, v.z);
-			n.negate();
-			this.add(n);
-		}
-	}, {
-		key: "divide",
-		value: function divide(scalar) {
-			scalar = 1 / scalar;
-			this.multiply(scalar);
-		}
-	}, {
-		key: "negate",
-		value: function negate() {
-			this.x = -this.x;
-			this.y = -this.y;
-			this.z = -this.z;
-		}
-	}, {
-		key: "clamp",
-		value: function clamp(limit) {
-			if (this.x > limit) {
-				this.x = limit;
-			} else if (this.x < 0 && this.x < limit) {
-				this.x = -limit;
-			}
-			if (this.y > limit) {
-				this.y = limit;
-			} else if (this.y < 0 && this.y < limit) {
-				this.y = -limit;
-			}
-			if (this.z > limit) {
-				this.z = limit;
-			} else if (this.z < 0 && this.z < limit) {
-				this.z = -limit;
-			}
-		}
-	}, {
-		key: "limit",
-		value: function limit(_limit) {
-			if (this.magnitude() > _limit) {
-				this.normalize();
-				this.multiply(_limit);
-			}
-		}
-	}, {
-		key: "rotate",
-		value: function rotate(degrees) {
-			var pivotVector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector3();
-			var stabilize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+    }, {
+        key: "magnitude",
+        value: function magnitude(vector) {
+            return Math.sqrt(Vector3.dot(vector, vector));
+        }
 
-			var mag = this.magnitude();
-			var rads = Convert.degreesToRadians(degrees);
-			var cosineAngle = Math.cos(rads);
-			var sineAngle = Math.sin(rads);
-			this.x = cosineAngle * (this.x - pivotVector.x) + sineAngle * (this.y - pivotVector.y) + pivotVector.x;
-			this.y = cosineAngle * (this.y - pivotVector.y) - sineAngle * (this.x - pivotVector.x) + pivotVector.y;
-			if (stabilize) {
-				this.normalize();
-				this.multiply(mag);
-			}
-		}
-	}, {
-		key: "magnitude",
-		value: function magnitude() {
-			return Math.sqrt(Vector3.dot(this, this));
-		}
-	}, {
-		key: "normalize",
-		value: function normalize() {
-			var m = this.magnitude();
-			if (m > 0) {
-				this.divide(m);
-			}
-		}
-	}, {
-		key: "x",
-		get: function get() {
-			return this.raw[0];
-		},
-		set: function set(value) {
-			this.raw[0] = value;
-		}
-	}, {
-		key: "y",
-		get: function get() {
-			return this.raw[1];
-		},
-		set: function set(value) {
-			this.raw[1] = value;
-		}
-	}, {
-		key: "z",
-		get: function get() {
-			return this.raw[2];
-		},
-		set: function set(value) {
-			this.raw[2] = value;
-		}
-	}]);
-	return Vector3;
+        /**
+         * Add two vectors
+         * @param a {Vector3}
+         * @param b {Vector3}
+         * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+         * @returns {Vector3}
+         * @static
+         */
+
+    }, {
+        key: "add",
+        value: function add(a, b) {
+            var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+
+            v.set(a.raw[0] + b.raw[0], a.raw[1] + b.raw[1], a.raw[2] + b.raw[2]);
+            return v;
+        }
+    }, {
+        key: "subtract",
+        value: function subtract(a, b) {
+            var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+
+            v.set(a.raw[0] - b.raw[0], a.raw[1] - b.raw[1], a.raw[2] - b.raw[2]);
+            return v;
+        }
+
+        /**
+         * Subtract two vectors
+         * @param a {Vector3}
+         * @param b {Vector3}
+         * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+         * @returns {Vector3}
+         * @static
+         */
+
+    }, {
+        key: "multiply",
+        value: function multiply(a, scalar) {
+            var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+
+            v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
+            return v;
+        }
+
+        /**
+         * Multiply two vectors
+         * @param a {Vector3}
+         * @param b {Vector3}
+         * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+         * @returns {Vector3}
+         * @static
+         */
+
+    }, {
+        key: "divide",
+        value: function divide(a, scalar) {
+            var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+
+            scalar = 1 / scalar;
+            v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
+            return v;
+        }
+
+        /**
+         * Gets the dot product of two vectors
+         * @param a {Vector3}
+         * @param b {Vector3}
+         * @returns {number}
+         * @static
+         */
+
+    }, {
+        key: "dot",
+        value: function dot(a, b) {
+            return a.raw[0] * b.raw[0] + a.raw[1] * b.raw[1] + a.raw[2] * b.raw[2];
+        }
+
+        /**
+         * Get the cross product of two vectors
+         * @param a {Vector3}
+         * @param b {Vector3}
+         * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+         * @returns {Vector3}
+         */
+
+    }, {
+        key: "cross",
+        value: function cross(a, b) {
+            var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+
+            v.set(a.raw[1] * b.raw[2] - b.raw[1] * a.raw[2], a.raw[2] * b.raw[0] - b.raw[2] * a.raw[0], a.raw[0] * b.raw[1] - b.raw[0] * a.raw[1]);
+            return v;
+        }
+
+        /**
+         * Get the distance between two vectors
+         * @param a {Vector3}
+         * @param b {Vector3}
+         * @returns {number}
+         */
+
+    }, {
+        key: "dist",
+        value: function dist(a, b) {
+            var vec1 = a.raw[0] - b.raw[0];
+            var vec2 = a.raw[1] - b.raw[1];
+            var vec3 = a.raw[2] - b.raw[2];
+            return Math.sqrt(vec1 * vec1 + vec2 * vec2 + vec3 * vec3);
+        }
+
+        /**
+         * Creates a new Vector
+         * @param x {number}
+         * @param y {number}
+         * @param z {number}
+         * @param w {number}
+         * @constructor
+         */
+
+    }]);
+
+    function Vector3() {
+        var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+        var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+        var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+        var w = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+        classCallCheck(this, Vector3);
+
+        this.raw = new Float32Array(4);
+        this.raw[0] = x;
+        this.raw[1] = y;
+        this.raw[2] = z;
+        this.raw[3] = w;
+    }
+
+    createClass(Vector3, [{
+        key: "get",
+
+
+        /**
+         * Copy this vector
+         * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+         * @returns {Vector3}
+         */
+        value: function get() {
+            var v = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Vector3();
+
+            v.set(this.raw[0], this.raw[1], this.raw[2], this.raw[3]);
+            return v;
+        }
+
+        /**
+         * Sets the vector to the values passed in
+         * @param x {number}
+         * @param y {number}
+         * @param z {number}
+         * @param w {number}
+         */
+
+    }, {
+        key: "set",
+        value: function set() {
+            var x = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
+            var y = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+            var z = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+            var w = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
+            this.raw[0] = x;
+            this.raw[1] = y;
+            this.raw[2] = z;
+            this.raw[3] = w;
+        }
+
+        /**
+         * Multiplies this vector by a scalar
+         * @param scalar {number}
+         */
+
+    }, {
+        key: "multiply",
+        value: function multiply(scalar) {
+            Vector3.multiply(this, scalar, this);
+        }
+
+        /**
+         * Adds the vector passed in to this vector
+         * @param v {Vector3}
+         */
+
+    }, {
+        key: "add",
+        value: function add(v) {
+            Vector3.add(this, v, this);
+        }
+
+        /**
+         * Subtracts the vector passed in from this vector
+         * @param v {Vector3}
+         */
+
+    }, {
+        key: "subtract",
+        value: function subtract(v) {
+            Vector3.subtract(this, v, this);
+        }
+
+        /**
+         * Divides this vector by the scalar
+         * @param scalar {Vector3}
+         */
+
+    }, {
+        key: "divide",
+        value: function divide(scalar) {
+            Vector3.divide(this, scalar, this);
+        }
+
+        /**
+         * Inverts this vector
+         */
+
+    }, {
+        key: "negate",
+        value: function negate() {
+            this.raw[0] = -this.raw[0];
+            this.raw[1] = -this.raw[1];
+            this.raw[2] = -this.raw[2];
+        }
+
+        /**
+         * Clamps the vector components to the limit value
+         * @param limit {number}
+         */
+
+    }, {
+        key: "clamp",
+        value: function clamp(limit) {
+            if (this.raw[0] > limit) {
+                this.raw[0] = limit;
+            } else if (this.raw[0] < 0 && this.raw[0] < limit) {
+                this.raw[0] = -limit;
+            }
+            if (this.raw[1] > limit) {
+                this.raw[1] = limit;
+            } else if (this.raw[1] < 0 && this.raw[1] < limit) {
+                this.raw[1] = -limit;
+            }
+            if (this.raw[2] > limit) {
+                this.raw[2] = limit;
+            } else if (this.raw[2] < 0 && this.raw[2] < limit) {
+                this.raw[2] = -limit;
+            }
+        }
+
+        /**
+         * limits the vector magnitude to the limit value
+         * @param limit {number} the maximum magnitude
+         */
+
+    }, {
+        key: "limit",
+        value: function limit(_limit) {
+            if (this.magnitude() > _limit) {
+                this.normalize();
+                this.multiply(_limit);
+            }
+        }
+
+        /**
+         * Rotate this vector
+         * @param degrees {number} degrees to rotate the vector by
+         * @param pivotVector {Vector3} [pivotVector= new Vector3()] The point that you want to rotate around (default 0,0)
+         * @param stabilize {boolean} [stabilize = false] stabilize the rotation of the vector by maintaining it's magnitude
+         */
+
+    }, {
+        key: "rotate",
+        value: function rotate(degrees) {
+            var pivotVector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector3();
+            var stabilize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+            var mag = this.magnitude();
+            var rads = Convert.DegreesToRadians(degrees);
+            var cosineAngle = Math.cos(rads);
+            var sineAngle = Math.sin(rads);
+            this.raw[0] = cosineAngle * (this.raw[0] - pivotVector.x) + sineAngle * (this.raw[1] - pivotVector.y) + pivotVector.x;
+            this.raw[1] = cosineAngle * (this.raw[1] - pivotVector.y) - sineAngle * (this.raw[0] - pivotVector.x) + pivotVector.y;
+            if (stabilize) {
+                this.normalize();
+                this.multiply(mag);
+            }
+        }
+
+        /**
+         * The magnitude of this vector
+         * @returns {number}
+         */
+
+    }, {
+        key: "magnitude",
+        value: function magnitude() {
+            return Math.sqrt(Vector3.dot(this, this));
+        }
+
+        /**
+         * Normalize this vector
+         */
+
+    }, {
+        key: "normalize",
+        value: function normalize() {
+            var m = this.magnitude();
+            if (m > 0) {
+                this.divide(m);
+            }
+        }
+    }, {
+        key: "x",
+        get: function get() {
+            return this.raw[0];
+        },
+        set: function set(value) {
+            this.raw[0] = value;
+        }
+    }, {
+        key: "y",
+        get: function get() {
+            return this.raw[1];
+        },
+        set: function set(value) {
+            this.raw[1] = value;
+        }
+    }, {
+        key: "z",
+        get: function get() {
+            return this.raw[2];
+        },
+        set: function set(value) {
+            this.raw[2] = value;
+        }
+    }, {
+        key: "w",
+        get: function get() {
+            return this.raw[3];
+        },
+        set: function set(value) {
+            this.raw[3] = value;
+        }
+    }]);
+    return Vector3;
 }();
 
 var Matrix3 = function () {
@@ -796,7 +1020,7 @@ var Matrix3 = function () {
 
 var Matrix4 = function () {
     function Matrix4() {
-        var array = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+        var array = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : Matrix4.identity();
         classCallCheck(this, Matrix4);
 
         this.setMatrix(array);
@@ -841,6 +1065,11 @@ var Matrix4 = function () {
             Matrix4.multiply(this, matrix, this);
         }
     }], [{
+        key: "identity",
+        value: function identity() {
+            return new Float32Array([1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+        }
+    }, {
         key: "dot",
         value: function dot(c1, c2, c3, c4, r1, r2, r3, r4) {
             return c1 * r1 + c2 * r2 + c3 * r3 + c4 * r4;
@@ -875,6 +1104,20 @@ var Matrix4 = function () {
             outputMatrix.setMatrix(matrix);
             return outputMatrix;
         }
+    }, {
+        key: "multiplyVector",
+        value: function multiplyVector(v3, matrix) {
+            var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
+
+            v.set(matrix[0] * v3.raw[0], matrix[1] * v3.raw[1], matrix[2] * v3.raw[2], matrix[3] * v3.raw[3], matrix[4] * v3.raw[0], matrix[5] * v3.raw[1], matrix[6] * v3.raw[2], matrix[7] * v3.raw[3], matrix[8] * v3.raw[0], matrix[9] * v3.raw[1], matrix[10] * v3.raw[2], matrix[11] * v3.raw[3], matrix[12] * v3.raw[0], matrix[13] * v3.raw[1], matrix[14] * v3.raw[2], matrix[15] * v3.raw[3]);
+            return v;
+        }
+    }, {
+        key: "translate",
+        value: function translate(v3) {}
+    }, {
+        key: "scale",
+        value: function scale(v3) {}
     }]);
     return Matrix4;
 }();
@@ -887,8 +1130,8 @@ var Generate = function () {
     }
 
     createClass(Generate, null, [{
-        key: "randomHexString",
-        value: function randomHexString(length) {
+        key: "RandomHexString",
+        value: function RandomHexString(length) {
             var bytes = "";
             for (var i = 0; i < length; i++) {
                 bytes += hexString.substr(Math.floor(Math.random() * hexString.length), 1);
@@ -898,7 +1141,7 @@ var Generate = function () {
     }, {
         key: "UUID",
         value: function UUID() {
-            return Generate.randomHexString(7) + "-" + Generate.randomHexString(4) + "-" + Generate.randomHexString(4) + "-" + Generate.randomHexString(4) + "-" + Generate.randomHexString(4) + "-" + Generate.randomHexString(12);
+            return Generate.RandomHexString(8) + "-" + Generate.RandomHexString(4) + "-" + Generate.RandomHexString(4) + "-" + Generate.RandomHexString(4) + "-" + Generate.RandomHexString(12);
         }
     }]);
     return Generate;
@@ -1017,344 +1260,6 @@ var Pool = function () {
         }
     }]);
     return Pool;
-}();
-
-var key = Generate.UUID();
-
-var Behavior = function () {
-	function Behavior() {
-		classCallCheck(this, Behavior);
-	}
-
-	createClass(Behavior, null, [{
-		key: "init",
-		value: function init() {
-			Pool.allocate(Vector3, key, 10, Vector3.reset);
-		}
-	}, {
-		key: "seek",
-		value: function seek(actor, targetPosition) {
-			var scaleForce = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
-
-			var desired = Pool.getObject(key);
-			var steer = Pool.getObject(key);
-
-			Vector3.subtract(targetPosition, actor.location, desired);
-			desired.normalize();
-			desired.multiply(actor.maxSpeed);
-			Vector3.subtract(desired, actor.velocity, steer);
-
-			steer.limit(actor.maxForce);
-			steer.multiply(scaleForce);
-			actor.addForce(steer);
-
-			Pool.returnObject(desired);
-			Pool.returnObject(steer);
-		}
-	}, {
-		key: "arrive",
-		value: function arrive(actor, target) {
-			var power = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;
-			var scaleForce = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
-
-			var desired = Pool.getObject(key);
-			var steer = Pool.getObject(key);
-			Vector3.subtract(target, actor.location, desired);
-			var mappedPower = Convert.MapRange(desired.magnitude(), 0, power, 0, actor.maxSpeed);
-			desired.normalize();
-			desired.multiply(mappedPower);
-			Vector3.subtract(desired, actor.velocity, steer);
-			steer.limit(actor.maxForce);
-			steer.multiply(scaleForce);
-			actor.addForce(steer);
-			Pool.returnObject(desired);
-			Pool.returnObject(steer);
-		}
-	}, {
-		key: "avoidAll",
-		value: function avoidAll(actor, obstacles) {
-			var avoidRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 80;
-			var scaleForce = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
-
-			var difference = Pool.getObject(key);
-			var steer = Pool.getObject(key);
-			var total = Pool.getObject(key);
-			var count = 0;
-			for (var o = 0; o < obstacles.length; o++) {
-				var obstacle = obstacles[o];
-				var distance = Vector3.dist(actor.location, obstacle.location);
-				if (distance > 0 && distance < avoidRadius && actor.id != obstacle.id) {
-					Vector3.subtract(actor.location, obstacle.location, difference);
-					difference.normalize();
-					difference.divide(distance);
-					total.add(difference);
-					count++;
-				}
-			}
-			if (count > 0) {
-				total.divide(count);
-				total.normalize();
-				total.multiply(actor.maxSpeed);
-				Vector3.subtract(total, actor.velocity, steer);
-				steer.limit(actor.maxForce);
-				steer.multiply(scaleForce);
-				actor.addForce(steer);
-			}
-			Pool.returnObject(difference);
-			Pool.returnObject(steer);
-			Pool.returnObject(total);
-		}
-	}, {
-		key: "avoid",
-		value: function avoid(actor, target, avoidRadius) {
-			this.avoidAll(actor, [target], avoidRadius);
-		}
-	}, {
-		key: "constrain",
-		value: function constrain(actor, minWidth, minHeight, maxWidth, maxHeight) {
-			var margin = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-
-			minWidth -= margin;
-			maxWidth += margin;
-			minHeight -= margin;
-			maxHeight += margin;
-
-			if (actor.location.x < minWidth) {
-				actor.velocity.x *= -1;
-				actor.location.x = minWidth;
-			}
-			if (actor.location.y < minHeight) {
-				actor.velocity.y *= -1;
-				actor.location.y = minHeight;
-			}
-			if (actor.location.x > maxWidth) {
-
-				actor.velocity.x *= -1;
-				actor.location.x = maxWidth;
-			}
-			if (actor.location.y > maxHeight) {
-				actor.velocity.y *= -1;
-				actor.location.y = maxHeight;
-			}
-		}
-	}, {
-		key: "wrap",
-		value: function wrap(actor, minWidth, minHeight, maxWidth, maxHeight) {
-			var margin = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-
-			minWidth -= margin;
-			maxWidth += margin;
-			minHeight -= margin;
-			maxHeight += margin;
-
-			if (actor.location.x < minWidth) {
-				actor.location.x = maxWidth;
-			}
-			if (actor.location.y < minHeight) {
-				actor.location.y = maxHeight;
-			}
-			if (actor.location.x > maxWidth) {
-				actor.location.x = minWidth;
-			}
-			if (actor.location.y > maxHeight) {
-				actor.location.y = minHeight;
-			}
-		}
-	}, {
-		key: "disableOutside",
-		value: function disableOutside(actor, minWidth, minHeight, maxWidth, maxHeight) {
-			var margin = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-
-			minWidth -= margin;
-			maxWidth += margin;
-			minHeight -= margin;
-			maxHeight += margin;
-
-			if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
-				actor.active = false;
-				actor.visible = false;
-			}
-		}
-	}, {
-		key: "destroyOutside",
-		value: function destroyOutside(actor, minWidth, minHeight, maxWidth, maxHeight) {
-			var margin = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
-
-			minWidth -= margin;
-			maxWidth += margin;
-			minHeight -= margin;
-			maxHeight += margin;
-			if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
-				actor.dead = true;
-			}
-		}
-	}]);
-	return Behavior;
-}();
-
-Behavior.init();
-
-var Actor = function () {
-	function Actor(className) {
-		var location = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector3(0, 0, 0);
-		classCallCheck(this, Actor);
-
-		this.type = className;
-		this.active = true;
-		this.visible = true;
-		this.dead = false;
-		this.id = Generate.UUID();
-		this.location = location;
-		this.velocity = new Vector3(0, 0, 0);
-		this.acceleration = new Vector3(0, 0, 0);
-		this.angle = 0;
-		this.maxSpeed = 15;
-		this.maxForce = 1;
-		this.parent = null;
-		this.children = [];
-	}
-
-	createClass(Actor, [{
-		key: "addForce",
-		value: function addForce(vector) {
-			this.acceleration.add(vector);
-		}
-	}, {
-		key: "update",
-		value: function update() {
-			if (this.active) {
-				this.move();
-				this.velocity.add(this.acceleration);
-				this.location.add(this.velocity);
-				this.acceleration.set(0, 0, 0);
-			}
-		}
-	}, {
-		key: "move",
-		value: function move() {}
-	}, {
-		key: "render",
-		value: function render() {
-			if (this.visible) {
-				this.draw();
-			}
-		}
-	}, {
-		key: "draw",
-		value: function draw() {
-			// override this function win your drawing code
-		}
-	}, {
-		key: "destroy",
-		value: function destroy() {
-			this.dead = true;
-			for (var i = 0; i < this.children.length; i++) {
-				this.children[i].destroy();
-			}
-		}
-	}]);
-	return Actor;
-}();
-
-var DOMActor = function (_Actor) {
-	inherits(DOMActor, _Actor);
-
-	function DOMActor(className, location) {
-		classCallCheck(this, DOMActor);
-
-		var _this = possibleConstructorReturn(this, (DOMActor.__proto__ || Object.getPrototypeOf(DOMActor)).call(this, className, location));
-
-		_this.element = document.createElement("div");
-		_this.element.classList.add("actor");
-		_this.element.classList.add(className);
-		_this.parentElement = null;
-		return _this;
-	}
-
-	createClass(DOMActor, [{
-		key: "addToParentElement",
-		value: function addToParentElement(parentElement) {
-			this.parentElement = parentElement;
-			this.parentElement.appendChild(this.element);
-		}
-	}, {
-		key: "draw",
-		value: function draw() {
-			this.element.style.transform = "translateX(" + this.location.x + "px) translateY(" + this.location.y + "px) rotate(" + this.angle + "deg)";
-		}
-	}, {
-		key: "destroy",
-		value: function destroy() {
-			this.dead = true;
-			this.element.remove();
-			this.parentElement = null;
-		}
-	}]);
-	return DOMActor;
-}(Actor);
-
-var GameLoop = function () {
-	function GameLoop() {
-		classCallCheck(this, GameLoop);
-
-		this.gameObjects = [];
-		this.controller = [];
-	}
-
-	createClass(GameLoop, [{
-		key: "setController",
-		value: function setController(inputController) {
-			this.controller.push(inputController);
-		}
-	}, {
-		key: "getType",
-		value: function getType(type) {
-			var matches = [];
-			for (var i = 0; i < this.gameObjects.length; i++) {
-				if (this.gameObjects[i].type === type) {
-					matches.push(this.gameObjects[i]);
-				}
-			}
-			return matches;
-		}
-	}, {
-		key: "update",
-		value: function update() {
-			this.removeActors();
-			for (var i = 0; i < this.gameObjects.length; i++) {
-				this.gameObjects[i].update();
-			}
-		}
-	}, {
-		key: "addActor",
-		value: function addActor(actor) {
-			this.gameObjects.push(actor);
-		}
-	}, {
-		key: "removeActors",
-		value: function removeActors() {
-			for (var i = 0; i < this.gameObjects.length; i++) {
-				if (this.gameObjects[i].dead) {
-					this.gameObjects.splice(i, 1);
-				}
-			}
-		}
-	}, {
-		key: "render",
-		value: function render() {
-			for (var i = 0; i < this.gameObjects.length; i++) {
-				this.gameObjects[i].render();
-			}
-		}
-	}, {
-		key: "loop",
-		value: function loop() {
-			this.update();
-			this.render();
-			window.requestAnimationFrame(this.loop.bind(this));
-		}
-	}]);
-	return GameLoop;
 }();
 
 var listeners = {};
@@ -1548,89 +1453,599 @@ var Screen = function () {
                 Screen._anchorPositions = value;
             }
         }
+    }, {
+        key: "width",
+        get: function get() {
+            return Screen._dimensions.x;
+        }
+    }, {
+        key: "height",
+        get: function get() {
+            return Screen._dimensions.y;
+        }
     }]);
     return Screen;
 }();
 
 Screen.init();
 
-var InputController = function () {
-	function InputController() {
-		classCallCheck(this, InputController);
+/**
+ * Behaviors are applied to Actors by passing actors, target actors, and parameters into them.
+ * @class Behaviors
+ */
+var key = Generate.UUID();
 
-		this.keyMap = {};
-		this.mousePos = new Vector3();
+var Behavior = function () {
+    function Behavior() {
+        classCallCheck(this, Behavior);
+    }
+
+    createClass(Behavior, null, [{
+        key: "init",
+
+        /**
+         * init is a static method that is used to initialize the object pool
+         */
+        value: function init() {
+            Pool.allocate(Vector3, key, 10, Vector3.reset);
+        }
+
+        /**
+         * seek() finds the distance between the actor and the targetLcation and applys a force to move the actor toward that target.
+         * @param actor {Actor}
+         * @param targetPosition {Vector3}
+         * @param scaleForce {?number}
+         */
+
+    }, {
+        key: "seek",
+        value: function seek(actor, targetPosition) {
+            var scaleForce = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
+
+            var desired = Pool.getObject(key);
+            var steer = Pool.getObject(key);
+
+            Vector3.subtract(targetPosition, actor.location, desired);
+            desired.normalize();
+            desired.multiply(actor.maxSpeed);
+            Vector3.subtract(desired, actor.velocity, steer);
+
+            steer.limit(actor.maxForce);
+            steer.multiply(scaleForce);
+            actor.addForce(steer);
+
+            Pool.returnObject(desired);
+            Pool.returnObject(steer);
+        }
+
+        /**
+         * arrive() works similarly to seek, but with the magnitude of the seek mapped to a power that is inversely proportionate to the magnitude of the distance between the actor and the target.
+         * @param actor {Actor}
+         * @param target {Vector3}
+         * @param power {?number}
+         * @param scaleForce {?number}
+         */
+
+    }, {
+        key: "arrive",
+        value: function arrive(actor, target) {
+            var power = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 50;
+            var scaleForce = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+
+            var desired = Pool.getObject(key);
+            var steer = Pool.getObject(key);
+            Vector3.subtract(target, actor.location, desired);
+            var mappedPower = Convert.MapRange(desired.magnitude(), 0, power, 0, actor.maxSpeed);
+            desired.normalize();
+            desired.multiply(mappedPower);
+            Vector3.subtract(desired, actor.velocity, steer);
+            steer.limit(actor.maxForce);
+            steer.multiply(scaleForce);
+            actor.addForce(steer);
+            Pool.returnObject(desired);
+            Pool.returnObject(steer);
+        }
+
+        /**
+         * avoidAll() takes an array of obstacle actors and for each obstacle, the Actor will have the average escape vector of all the obstacles near it applied to it.
+         * @param actor {Actor}
+         * @param obstacles {Array.<Actor>}
+         * @param avoidRadius {?number}
+         * @param scaleForce {?number}
+         */
+
+    }, {
+        key: "avoidAll",
+        value: function avoidAll(actor, obstacles) {
+            var avoidRadius = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 80;
+            var scaleForce = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 1;
+
+            var difference = Pool.getObject(key);
+            var steer = Pool.getObject(key);
+            var total = Pool.getObject(key);
+            var count = 0;
+            for (var o = 0; o < obstacles.length; o++) {
+                var obstacle = obstacles[o];
+                var distance = Vector3.dist(actor.location, obstacle.location);
+                if (distance > 0 && distance < avoidRadius && actor.id != obstacle.id) {
+                    Vector3.subtract(actor.location, obstacle.location, difference);
+                    difference.normalize();
+                    difference.divide(distance);
+                    total.add(difference);
+                    count++;
+                }
+            }
+            if (count > 0) {
+                total.divide(count);
+                total.normalize();
+                total.multiply(actor.maxSpeed);
+                Vector3.subtract(total, actor.velocity, steer);
+                steer.limit(actor.maxForce);
+                steer.multiply(scaleForce);
+                actor.addForce(steer);
+            }
+            Pool.returnObject(difference);
+            Pool.returnObject(steer);
+            Pool.returnObject(total);
+        }
+
+        /**
+         * Uses a single obstacle in the avoidAll function
+         * @param actor
+         * @param target
+         * @param avoidRadius
+         */
+
+    }, {
+        key: "avoid",
+        value: function avoid(actor, target, avoidRadius) {
+            this.avoidAll(actor, [target], avoidRadius);
+        }
+
+        /**
+         * constrain() will lock your actor to the provided area. Velocity will be inverted with no friction when an Actor hits the wall.
+         * @param actor {Actor}
+         * @param minWidth {number} Left
+         * @param minHeight {number} Uo
+         * @param maxWidth {number} Right
+         * @param maxHeight {number} Bottom
+         * @param margin {number} the amount of offset you want for these values. The margins work by subtracting from minimums and adding to maximums.
+         */
+
+    }, {
+        key: "constrain",
+        value: function constrain(actor) {
+            var minWidth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+            var minHeight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+            var maxWidth = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : Screen.width;
+            var maxHeight = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : Screen.height;
+            var margin = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+
+            minWidth -= margin;
+            maxWidth += margin;
+            minHeight -= margin;
+            maxHeight += margin;
+
+            if (actor.location.x < minWidth) {
+                actor.velocity.x *= -1;
+                actor.location.x = minWidth;
+            }
+            if (actor.location.y < minHeight) {
+                actor.velocity.y *= -1;
+                actor.location.y = minHeight;
+            }
+            if (actor.location.x > maxWidth) {
+
+                actor.velocity.x *= -1;
+                actor.location.x = maxWidth;
+            }
+            if (actor.location.y > maxHeight) {
+                actor.velocity.y *= -1;
+                actor.location.y = maxHeight;
+            }
+        }
+
+        /**
+         * wrap() will teleport your object to the opposite side of the screen where it left
+         * @param actor {Actor}
+         * @param minWidth {number} Left
+         * @param minHeight {number} Uo
+         * @param maxWidth {number} Right
+         * @param maxHeight {number} Bottom
+         * @param margin {number} the amount of offset you want for these values. The margins work by subtracting from minimums and adding to maximums.
+         */
+
+    }, {
+        key: "wrap",
+        value: function wrap(actor) {
+            var minWidth = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
+            var minHeight = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+            var maxWidth = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : Screen.width;
+            var maxHeight = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : Screen.height;
+            var margin = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+
+            minWidth -= margin;
+            maxWidth += margin;
+            minHeight -= margin;
+            maxHeight += margin;
+
+            if (actor.location.x < minWidth) {
+                actor.location.x = maxWidth;
+            }
+            if (actor.location.y < minHeight) {
+                actor.location.y = maxHeight;
+            }
+            if (actor.location.x > maxWidth) {
+                actor.location.x = minWidth;
+            }
+            if (actor.location.y > maxHeight) {
+                actor.location.y = minHeight;
+            }
+        }
+
+        /**
+         * disableOutside will set your Actor.active parameter to "false" when it leaves the defined area
+         * @param actor {Actor}
+         * @param minWidth {number} Left
+         * @param minHeight {number} Uo
+         * @param maxWidth {number} Right
+         * @param maxHeight {number} Bottom
+         * @param margin {number} the amount of offset you want for these values. The margins work by subtracting from minimums and adding to maximums.
+         */
+
+    }, {
+        key: "disableOutside",
+        value: function disableOutside(actor, minWidth, minHeight, maxWidth, maxHeight) {
+            var margin = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+
+            minWidth -= margin;
+            maxWidth += margin;
+            minHeight -= margin;
+            maxHeight += margin;
+
+            if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
+                actor.active = false;
+                actor.visible = false;
+            }
+        }
+
+        /**
+         * destroyOutside will set Actor.dead to true if it leaves the defined area;
+         * @param actor {Actor}
+         * @param minWidth {number} Left
+         * @param minHeight {number} Uo
+         * @param maxWidth {number} Right
+         * @param maxHeight {number} Bottom
+         * @param margin {number} the amount of offset you want for these values. The margins work by subtracting from minimums and adding to maximums.
+         */
+
+    }, {
+        key: "destroyOutside",
+        value: function destroyOutside(actor, minWidth, minHeight, maxWidth, maxHeight) {
+            var margin = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 0;
+
+            minWidth -= margin;
+            maxWidth += margin;
+            minHeight -= margin;
+            maxHeight += margin;
+            if (actor.location.x < minWidth || actor.location.y < minHeight || actor.location.x > maxWidth || actor.location.y > maxHeight) {
+                actor.dead = true;
+            }
+        }
+    }]);
+    return Behavior;
+}();
+
+Behavior.init();
+
+/**
+ *    The Actor class is used by Behaviors to apply behaviors to.
+ *  @Class Actor
+ */
+
+var Actor = function () {
+    /**
+     * @constructor
+     * @param className {string}
+     * @param location {Vector3)
+     */
+    function Actor() {
+        var className = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "Actor";
+        var location = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector3(0, 0, 0);
+        classCallCheck(this, Actor);
+
+        this.type = className;
+        this.active = true;
+        this.visible = true;
+        this.dead = false;
+        this.id = Generate.UUID();
+        this.location = location;
+        this.velocity = new Vector3(0, 0, 0);
+        this.acceleration = new Vector3(0, 0, 0);
+        this.angle = 0;
+        this.maxSpeed = 15;
+        this.maxForce = 1;
+    }
+
+    /**
+     * addForce() will add the vector you pass in to the acceleration
+     * @param vector {Vector3}
+     */
+
+
+    createClass(Actor, [{
+        key: "addForce",
+        value: function addForce(vector) {
+            this.acceleration.add(vector);
+        }
+
+        /**
+         * update() will check to see if this actor is active, then call move(), then add the acceleration to the velocity, the velocity to the location, then reset the acceleration.
+         */
+
+    }, {
+        key: "update",
+        value: function update() {
+            if (this.active) {
+                this.move();
+                this.velocity.add(this.acceleration);
+                this.location.add(this.velocity);
+                this.acceleration.set(0, 0, 0);
+            }
+        }
+
+        /**
+         * move() is unused in the base class and is designed to be overridden. Anything in the move function will be applied before acceleration is added to velocity. See DOMActor for an example.
+         */
+
+    }, {
+        key: "move",
+        value: function move() {}
+
+        /**
+         * render() checks if the actor is visible then calls the draw() function. See DOMActor for an example.
+         */
+
+    }, {
+        key: "render",
+        value: function render() {
+            if (this.visible) {
+                this.draw();
+            }
+        }
+
+        /**
+         * draw() is empty in this class but can be extended to render itself in any rendering environment of your choice. See DOMActor for an example.
+         */
+
+    }, {
+        key: "draw",
+        value: function draw() {}
+        // override this function win your drawing code
+
+
+        /**
+         * destroy() sets the Actor.dead state to true. This is used by the GameLoop class to clean up / remove dead objects.
+         */
+
+    }, {
+        key: "destroy",
+        value: function destroy() {
+            this.dead = true;
+        }
+    }]);
+    return Actor;
+}();
+
+/**
+ * DOMActor is an extension of the Actor class specifically for working with DOM elements.
+ * @class DOMActor
+ * @extends Actor
+ */
+
+var DOMActor = function (_Actor) {
+    inherits(DOMActor, _Actor);
+
+    /**
+     * @param className {string} the CSS class you want to use for this DOMActor
+     * @param location {Vector3} The starting location for this Actor
+     * @constructor
+     */
+    function DOMActor(className, location) {
+        classCallCheck(this, DOMActor);
+
+        var _this = possibleConstructorReturn(this, (DOMActor.__proto__ || Object.getPrototypeOf(DOMActor)).call(this, className, location));
+
+        _this.element = document.createElement("div");
+        _this.element.classList.add("actor");
+        _this.element.classList.add(className);
+        _this.parentElement = null;
+        return _this;
+    }
+
+    /**
+     * addToParentElement() will add DOMActor.element to the parentElement
+     * @param parentElement {HTMLElement}
+     */
+
+
+    createClass(DOMActor, [{
+        key: "addToParentElement",
+        value: function addToParentElement(parentElement) {
+            this.parentElement = parentElement;
+            this.parentElement.appendChild(this.element);
+        }
+
+        /**
+         * draw() sets this DOMActor.element.style.transform to `translateX(${this.location.x}px) translateY(${this.location.y}px) rotate(${this.angle}deg)`
+         */
+
+    }, {
+        key: "draw",
+        value: function draw() {
+            this.element.style.transform = "translateX(" + this.location.x + "px) translateY(" + this.location.y + "px) rotate(" + this.angle + "deg)";
+        }
+
+        /**
+         * destroy() sets this DOMActor to dead, removes it from the DOM, and nulls its reference to the parentElement
+         */
+
+    }, {
+        key: "destroy",
+        value: function destroy() {
+            this.dead = true;
+            this.element.remove();
+            this.parentElement = null;
+        }
+    }]);
+    return DOMActor;
+}(Actor);
+
+var GameLoop = function () {
+	function GameLoop() {
+		classCallCheck(this, GameLoop);
+
+		this.gameObjects = [];
+		this.controller = [];
 	}
 
-	createClass(InputController, [{
-		key: "bindEvents",
-		value: function bindEvents() {
-			document.addEventListener("mouseup", this.setMouseUp.bind(this));
-			document.addEventListener("mousedown", this.setMouseDown.bind(this));
-			document.addEventListener("mousemove", this.setMousePos.bind(this));
-			onkeydown = onkeyup = this.mapKeys.bind(this);
+	createClass(GameLoop, [{
+		key: "setController",
+		value: function setController(inputController) {
+			this.controller.push(inputController);
 		}
 	}, {
-		key: "unbindEvents",
-		value: function unbindEvents() {
-			document.removeEventListener("mouseup", this.setMouseUp.bind(this));
-			document.removeEventListener("mousedown", this.setMouseDown.bind(this));
-			document.removeEventListener("mousemove", this.setMousePos.bind(this));
-			onkeydown = onkeyup = null;
+		key: "getType",
+		value: function getType(type) {
+			var matches = [];
+			for (var i = 0; i < this.gameObjects.length; i++) {
+				if (this.gameObjects[i].type === type) {
+					matches.push(this.gameObjects[i]);
+				}
+			}
+			return matches;
 		}
 	}, {
-		key: "setMousePos",
-		value: function setMousePos(e) {
-			this.mousePos.set(e.pageX, e.pageY);
+		key: "update",
+		value: function update() {
+			this.removeActors();
+			for (var i = 0; i < this.gameObjects.length; i++) {
+				this.gameObjects[i].update();
+			}
 		}
 	}, {
-		key: "setMouseUp",
-		value: function setMouseUp(e) {
-			var fakeKey = {
-				key: "mouse" + e.button,
-				type: "keyup"
-			};
-			this.mapKeys(fakeKey);
+		key: "addActor",
+		value: function addActor(actor) {
+			this.gameObjects.push(actor);
 		}
 	}, {
-		key: "setMouseDown",
-		value: function setMouseDown(e) {
-			var fakeKey = {
-				key: "mouse" + e.button,
-				type: "keydown"
-			};
-			this.mapKeys(fakeKey);
-		}
-	}, {
-		key: "mapKeys",
-		value: function mapKeys(e) {
-			e = e || event;
-			this.keyMap[e.key] = e.type == 'keydown';
-		}
-	}, {
-		key: "keyUp",
-		value: function keyUp(key) {
-			console.log(key);
-		}
-	}, {
-		key: "keyDown",
-		value: function keyDown(key) {
-			console.log(key);
-		}
-	}, {
-		key: "setKeys",
-		value: function setKeys() {
-			for (var key in this.keyMap) {
-				if (this.keyMap[key]) {
-					this.keyDown(key);
-				} else {
-					this.keyUp(key);
+		key: "removeActors",
+		value: function removeActors() {
+			for (var i = 0; i < this.gameObjects.length; i++) {
+				if (this.gameObjects[i].dead) {
+					this.gameObjects.splice(i, 1);
 				}
 			}
 		}
+	}, {
+		key: "render",
+		value: function render() {
+			for (var i = 0; i < this.gameObjects.length; i++) {
+				this.gameObjects[i].render();
+			}
+		}
+	}, {
+		key: "loop",
+		value: function loop() {
+			this.update();
+			this.render();
+			window.requestAnimationFrame(this.loop.bind(this));
+		}
 	}]);
-	return InputController;
+	return GameLoop;
 }();
+
+var InputController = function () {
+    function InputController() {
+        classCallCheck(this, InputController);
+
+        this.keyMap = {};
+        this.mousePos = new Vector3();
+    }
+
+    createClass(InputController, [{
+        key: "bindEvents",
+        value: function bindEvents() {
+            document.addEventListener("mouseup", this.setMouseUp.bind(this));
+            document.addEventListener("mousedown", this.setMouseDown.bind(this));
+            document.addEventListener("mousemove", this.setMousePos.bind(this));
+            onkeydown = onkeyup = this.mapKeys.bind(this);
+        }
+    }, {
+        key: "unbindEvents",
+        value: function unbindEvents() {
+            document.removeEventListener("mouseup", this.setMouseUp.bind(this));
+            document.removeEventListener("mousedown", this.setMouseDown.bind(this));
+            document.removeEventListener("mousemove", this.setMousePos.bind(this));
+            onkeydown = onkeyup = null;
+        }
+    }, {
+        key: "setMousePos",
+        value: function setMousePos(e) {
+            this.mousePos.set(e.pageX, e.pageY);
+        }
+    }, {
+        key: "setMouseUp",
+        value: function setMouseUp(e) {
+            var fakeKey = {
+                key: "mouse" + e.button,
+                type: "keyup"
+            };
+            this.mapKeys(fakeKey);
+        }
+    }, {
+        key: "setMouseDown",
+        value: function setMouseDown(e) {
+            var fakeKey = {
+                key: "mouse" + e.button,
+                type: "keydown"
+            };
+            this.mapKeys(fakeKey);
+        }
+    }, {
+        key: "mapKeys",
+        value: function mapKeys(e) {
+            e = e || event;
+            this.keyMap[e.key] = e.type == 'keydown';
+        }
+    }, {
+        key: "keyUp",
+        value: function keyUp(key) {
+            console.log(key);
+        }
+    }, {
+        key: "keyDown",
+        value: function keyDown(key) {
+            console.log(key);
+        }
+    }, {
+        key: "setKeys",
+        value: function setKeys() {
+            for (var key in this.keyMap) {
+                if (this.keyMap[key]) {
+                    this.keyDown(key);
+                } else {
+                    this.keyUp(key);
+                }
+            }
+        }
+    }]);
+    return InputController;
+}();
+
+/**
+ * Main.js
+ */
 
 exports.Vector2 = Vector2;
 exports.Vector3 = Vector3;
@@ -1644,6 +2059,7 @@ exports.Screen = Screen;
 exports.InputController = InputController;
 exports.EventLite = EventLite;
 exports.Pool = Pool;
-exports.Convert = Pool;
+exports.Convert = Convert;
+exports.Generate = Generate;
 
 //# sourceMappingURL=vexr.cjs.map
