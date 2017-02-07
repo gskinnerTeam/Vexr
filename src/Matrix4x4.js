@@ -81,12 +81,10 @@ export default class Matrix4 {
     }
 
     static multiplyVector (v3, matrix, v = new Vector3()) {
-		v.set(
-            matrix[0]*v3.raw[0], matrix[1]*v3.raw[1], matrix[2]*v3.raw[2], matrix[3]*v3.raw[3],
-			matrix[4]*v3.raw[0], matrix[5]*v3.raw[1], matrix[6]*v3.raw[2], matrix[7]*v3.raw[3],
-			matrix[8]*v3.raw[0], matrix[9]*v3.raw[1], matrix[10]*v3.raw[2], matrix[11]*v3.raw[3],
-		    matrix[12]*v3.raw[0], matrix[13]*v3.raw[1], matrix[14]*v3.raw[2], matrix[15]*v3.raw[3],
-        );
+		v.set(  matrix[0]*v3.raw[0],    matrix[1]*v3.raw[1],    matrix[2]*v3.raw[2],    matrix[3]*v3.raw[3],
+                matrix[4]*v3.raw[0],    matrix[5]*v3.raw[1],    matrix[6]*v3.raw[2],    matrix[7]*v3.raw[3],
+                matrix[8]*v3.raw[0],    matrix[9]*v3.raw[1],    matrix[10]*v3.raw[2],   matrix[11]*v3.raw[3],
+                matrix[12]*v3.raw[0],   matrix[13]*v3.raw[1],   matrix[14]*v3.raw[2],   matrix[15]*v3.raw[3]);
 		return v;
     }
 
