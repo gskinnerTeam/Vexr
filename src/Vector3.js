@@ -165,62 +165,34 @@ export default class Vector3 {
         this.raw[3] = w;
     }
 
-    /**
-     * Get X
-     * @returns {*}
-     */
     get x() {
         return this.raw[0];
     }
 
-    /**
-     * Set X
-     */
     set x(value) {
         this.raw[0] = value;
     }
 
-    /**
-     * Get Y
-     * @returns {*}
-     */
     get y() {
         return this.raw[1];
     }
 
-    /**
-     * Set Y
-     */
     set y(value) {
         this.raw[1] = value;
     }
 
-    /**
-     * Get Z
-     * @returns {*}
-     */
     get z() {
         return this.raw[2];
     }
 
-    /**
-     * Set Z
-     */
     set z(value) {
         this.raw[2] = value;
     }
 
-    /**
-     * Get W
-     * @returns {*}
-     */
     get w() {
         return this.raw[3];
     }
 
-    /**
-     * Set W
-     */
     set w(value) {
         this.raw[3] = value;
     }
