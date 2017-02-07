@@ -2,7 +2,7 @@ function errorTolerance(error, tolerance) {
 	tolerance = tolerance || 2.1316282072803006e-14;
 	return Math.abs(error) <= tolerance;
 }
-
+var Convert = Vexr.Convert;
 // karma puts the Vexr global module in the test environment.
 var Vector2 = Vexr.Vector2;
 describe('Vector2 Methods', function () {
@@ -170,14 +170,14 @@ describe('Vector2 Methods', function () {
 		it("Static Vector degreesToRadians", function () {
 			var radians = 0.017453292519943295;
 			for (var i = 0; i < 360; i++) {
-				var radian = Vector2.degreesToRadians(i);
+				var radian = Convert.DegreesToRadians(i);
 				assert.equal(i * radians, radian);
 			}
 		});
 		it("Static Vector radiansToDegrees", function () {
 			var radian = 0.017453292519943295;
 			for (var i = 0; i < 360; i++) {
-				var degree = Vector2.radiansToDegrees(radian * i);
+				var degree = Convert.RadiansToDegrees(radian * i);
 				assert.equal(i, Math.round(degree));
 			}
 		});
@@ -241,46 +241,46 @@ describe('Vector2 Methods', function () {
 			var vec1 = new Vector2(1,0);
 			var vec2 = new Vector2(-1,0);
 			var angle = Vector2.angleBetween(vec1, vec2);
-			var degrees = Vector2.radiansToDegrees(angle);
+			var degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(180, degrees);
 
 			vec1 = new Vector2(1,1);
 			vec2 = new Vector2(0,1);
 			angle = Vector2.angleBetween(vec1, vec2);
-			degrees = Vector2.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(45, Math.round(degrees));
 
 			// vec1 = new Vector2(100,100);
 			// vec2 = vec1.get();
 			// vec2.rotate(45);
 			// angle = Vector2.angleBetween(vec1, vec2);
-			// degrees = Vector2.radiansToDegrees(angle);
+			// degrees = Convert.RadiansToDegrees(angle);
 			// assert.equal(45, Math.round(degrees));
 
 			vec1 = new Vector2(1,1);
 			vec2 = new Vector2(0,-1);
 			angle = Vector2.angleBetween(vec1, vec2);
-			degrees = Vector2.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(135, Math.round(degrees));
 
 			vec1 = new Vector2(1,1);
 			vec2 = vec1.get();
 			angle = Vector2.angleBetween(vec1, vec2);
-			degrees = Vector2.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(0, Math.round(degrees));
 
 			vec1 = new Vector2(1,1);
 			vec2 = vec1.get();
 			vec2.rotate(1);
 			angle = Vector2.angleBetween(vec1, vec2);
-			degrees = Vector2.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(1, Math.round(degrees));
 
 			vec1 = new Vector2(1,1);
 			vec2 = vec1.get();
 			vec2.rotate(90);
 			angle = Vector2.angleBetween(vec1, vec2);
-			degrees = Vector2.radiansToDegrees(angle);
+			degrees = Convert.RadiansToDegrees(angle);
 			assert.equal(90, Math.round(degrees));
 
 			// vec1 = new Vector2(1,0);
@@ -288,7 +288,7 @@ describe('Vector2 Methods', function () {
 			// for (var i = 0; i < 360; i++) {
 			//     vec2.rotate(1, new Vector2(0,0), true);
 			//     angle = Vector2.angleBetween(vec1, vec2);
-			//     degrees = Vector2.radiansToDegrees(angle);
+			//     degrees = Convert.RadiansToDegrees(angle);
 			//     console.log(degrees, i+1)
 			//     assert.equal(i+1, Math.round(degrees));
 			// }
@@ -346,24 +346,6 @@ describe('Vector2 Methods', function () {
 				var lerp = Vector2.lerp(vec1, vec2, count);
 				count+=0.1;
 				assert.equal(Math.round(lerp.y), i);
-			}
-
-		});
-		it('Map', function () {
-
-			for(var i = 0; i < 10; i++) {
-				var value = Vector2.map(i, 0, 10, 0, 100);
-				assert.equal(value, i*10);
-			}
-
-			for(var i = 0; i < 10; i++) {
-				var value = Vector2.map(i, 0, 10, 0, 10);
-				assert.equal(value, i);
-			}
-
-			for(var i = 0; i < 10; i++) {
-				var value = Vector2.map(i, 0, 10, 0, 350);
-				assert.equal(value, i*35);
 			}
 
 		});
