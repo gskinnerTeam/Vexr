@@ -1,3 +1,4 @@
+import Actor from "./Actor";
 /**
  * DOMActor is an extension of the Actor class specifically for working with DOM elements.
  * @class DOMActor
