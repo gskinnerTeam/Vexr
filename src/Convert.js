@@ -1,6 +1,6 @@
 /**
  * Small library of converters needed for the various Vexr operations
- * @class Covert
+ * @class Convert
  */
 
 export default class Convert {
