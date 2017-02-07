@@ -2,196 +2,362 @@ import Convert from "./Convert";
 
 export default class Vector3 {
 
-	static reset(v) {
-		v.set(0,0,0);
-	}
+    /**
+     * Resets the supplied Vector to 0.
+     * @param v {Vector3}
+     * @static
+     */
+    static reset(v) {
+        v.set(0, 0, 0, 0);
+    }
 
-	static angleBetween(a, b) {
-		var mag = a.magnitude() * b.magnitude();
-		var dot = Vector3.dot(a, b);
-		return Math.acos(dot / mag);
-	}
+    /**
+     * angleBetween() gets the angle between two vectors
+     * @param a {Vector3}
+     * @param b {Vector3}
+     * @returns {number}
+     * @static
+     */
+    static angleBetween(a, b) {
+        var mag = a.magnitude() * b.magnitude();
+        var dot = Vector3.dot(a, b);
+        return Math.acos(dot / mag);
+    }
 
-	static lerp(a, b, t, v = new Vector3()) {
-		v.set(
-			a.raw[0] + t * (b.raw[0] - a.raw[0]),
-			a.raw[1] + t * (b.raw[1] - a.raw[1]),
-			a.raw[2] + t * (b.raw[2] - a.raw[2])
-		);
-		return v;
-	}
+    /**
+     * Linear interpolation between two vector locations
+     * @param a {Vector3} Starting point
+     * @param b {Vector3} Ending point
+     * @param t {number} The ratio between the two points 0: Start. 1: End.
+     * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+     * @returns {Vector3}
+     * @static
+     */
+    static lerp(a, b, t, v = new Vector3()) {
+        v.set(
+            a.raw[0] + t * (b.raw[0] - a.raw[0]),
+            a.raw[1] + t * (b.raw[1] - a.raw[1]),
+            a.raw[2] + t * (b.raw[2] - a.raw[2])
+        );
+        return v;
+    }
 
-	static normalize(vector, v = new Vector3()) {
-		var vec = vector.get(v);
-		vec.normalize();
-		return vec;
-	}
+    /**
+     * Normalize a Vector
+     * @param vector {Vector3}
+     * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+     * @returns {Vector3}
+     * @static
+     */
+    static normalize(vector, v = new Vector3()) {
+        var vec = vector.get(v);
+        vec.normalize();
+        return vec;
+    }
 
-	static magnitude(vector) {
-		return Math.sqrt(Vector3.dot(vector, vector));
-	}
+    /**
+     * Get the Magnitude of a vector
+     * @param vector {Vector3}
+     * @returns {number}
+     * @static
+     */
+    static magnitude(vector) {
+        return Math.sqrt(Vector3.dot(vector, vector));
+    }
 
-	static add(a, b, v = new Vector3()) {
-		v.set(a.raw[0] + b.raw[0], a.raw[1] + b.raw[1], a.raw[2] + b.raw[2]);
-		return v;
-	}
+    /**
+     * Add two vectors
+     * @param a {Vector3}
+     * @param b {Vector3}
+     * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+     * @returns {Vector3}
+     * @static
+     */
+    static add(a, b, v = new Vector3()) {
+        v.set(a.raw[0] + b.raw[0], a.raw[1] + b.raw[1], a.raw[2] + b.raw[2]);
+        return v;
+    }
 
-	static subtract(a, b, v = new Vector3()) {
-		v.set(a.raw[0] - b.raw[0], a.raw[1] - b.raw[1], a.raw[2] - b.raw[2]);
-		return v;
-	}
+    static subtract(a, b, v = new Vector3()) {
+        v.set(a.raw[0] - b.raw[0], a.raw[1] - b.raw[1], a.raw[2] - b.raw[2]);
+        return v;
+    }
 
-	static multiply(a, scalar, v = new Vector3()) {
-		v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
-		return v;
-	}
+    /**
+     * Subtract two vectors
+     * @param a {Vector3}
+     * @param b {Vector3}
+     * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+     * @returns {Vector3}
+     * @static
+     */
+    static multiply(a, scalar, v = new Vector3()) {
+        v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
+        return v;
+    }
 
-	static divide(a, scalar, v = new Vector3()) {
-		scalar = 1/scalar;
-		v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
-		return v;
-	}
+    /**
+     * Multiply two vectors
+     * @param a {Vector3}
+     * @param b {Vector3}
+     * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+     * @returns {Vector3}
+     * @static
+     */
+    static divide(a, scalar, v = new Vector3()) {
+        scalar = 1 / scalar;
+        v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
+        return v;
+    }
 
-	static dot(a, b) {
-		return a.raw[0] * b.raw[0] + a.raw[1] * b.raw[1] + a.raw[2] * b.raw[2];
-	}
+    /**
+     * Gets the dot product of two vectors
+     * @param a {Vector3}
+     * @param b {Vector3}
+     * @returns {number}
+     * @static
+     */
+    static dot(a, b) {
+        return a.raw[0] * b.raw[0] + a.raw[1] * b.raw[1] + a.raw[2] * b.raw[2];
+    }
 
-	static cross(a, b, v = new Vector3()) {
-		v.set(
-			a.raw[1] * b.raw[2] - b.raw[1] * a.raw[2],
-			a.raw[2] * b.raw[0] - b.raw[2] * a.raw[0],
-			a.raw[0] * b.raw[1] - b.raw[0] * a.raw[1]);
-		return v;
-	}
+    /**
+     * Get the cross product of two vectors
+     * @param a {Vector3}
+     * @param b {Vector3}
+     * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+     * @returns {Vector3}
+     */
+    static cross(a, b, v = new Vector3()) {
+        v.set(
+            a.raw[1] * b.raw[2] - b.raw[1] * a.raw[2],
+            a.raw[2] * b.raw[0] - b.raw[2] * a.raw[0],
+            a.raw[0] * b.raw[1] - b.raw[0] * a.raw[1]);
+        return v;
+    }
 
+    /**
+     * Get the distance between two vectors
+     * @param a {Vector3}
+     * @param b {Vector3}
+     * @returns {number}
+     */
+    static dist(a, b) {
+        var vec1 = a.raw[0] - b.raw[0];
+        var vec2 = a.raw[1] - b.raw[1];
+        var vec3 = a.raw[2] - b.raw[2];
+        return Math.sqrt((vec1 * vec1) + (vec2 * vec2) + (vec3 * vec3));
+    }
 
-	static dist(a, b) {
-		var vec1 = a.raw[0] - b.raw[0];
-		var vec2 = a.raw[1] - b.raw[1];
-		var vec3 = a.raw[2] - b.raw[2];
-		return Math.sqrt((vec1 * vec1) + (vec2 * vec2) + (vec3 * vec3));
-	}
+    /**
+     * Creates a new Vector
+     * @param x {number}
+     * @param y {number}
+     * @param z {number}
+     * @param w {number}
+     * @constructor
+     */
+    constructor(x = 0, y = 0, z = 0, w = 0) {
+        this.raw = new Float32Array(4);
+        this.raw[0] = x;
+        this.raw[1] = y;
+        this.raw[2] = z;
+        this.raw[3] = w;
+    }
 
-	constructor(x = 0, y = 0, z = 0, w = 0) {
-		this.raw = new Float32Array(4);
-		this.raw[0] = x;
-		this.raw[1] = y;
-		this.raw[2] = z;
-		this.raw[3] = w;
-	}
+    /**
+     * Get X
+     * @returns {*}
+     */
+    get x() {
+        return this.raw[0];
+    }
 
-	get x () {
-		return this.raw[0];
-	}
+    /**
+     * Set X
+     */
+    set x(value) {
+        this.raw[0] = value;
+    }
 
-	set x (value) {
-		this.raw[0] = value;
-	}
+    /**
+     * Get Y
+     * @returns {*}
+     */
+    get y() {
+        return this.raw[1];
+    }
 
-	get y () {
-		return this.raw[1];
-	}
+    /**
+     * Set Y
+     */
+    set y(value) {
+        this.raw[1] = value;
+    }
 
-	set y (value) {
-		this.raw[1] = value;
-	}
+    /**
+     * Get Z
+     * @returns {*}
+     */
+    get z() {
+        return this.raw[2];
+    }
 
-	get z () {
-		return this.raw[2];
-	}
+    /**
+     * Set Z
+     */
+    set z(value) {
+        this.raw[2] = value;
+    }
 
-	set z (value) {
-		this.raw[2] = value;
-	}
+    /**
+     * Get W
+     * @returns {*}
+     */
+    get w() {
+        return this.raw[3];
+    }
 
-	get w() {
-		return this.raw[3];
-	}
-	set w(value) {
-		this.raw[3] = value;
-	}
+    /**
+     * Set W
+     */
+    set w(value) {
+        this.raw[3] = value;
+    }
 
-	get(v = new Vector3()) {
-		v.set(this.raw[0], this.raw[1], this.raw[2], this.raw[3]);
-		return v;
-	}
+    /**
+     * Copy this vector
+     * @param v {Vector3} [v= new Vector()] an optional reference instead of allocating a new vector
+     * @returns {Vector3}
+     */
+    get(v = new Vector3()) {
+        v.set(this.raw[0], this.raw[1], this.raw[2], this.raw[3]);
+        return v;
+    }
 
-	set(x=0, y=0, z=0, w=0) {
-		this.raw[0] = x;
-		this.raw[1] = y;
-		this.raw[2] = z;
-		this.raw[3] = w;
-	}
+    /**
+     * Sets the vector to the values passed in
+     * @param x {number}
+     * @param y {number}
+     * @param z {number}
+     * @param w {number}
+     */
+    set(x = 0, y = 0, z = 0, w = 0) {
+        this.raw[0] = x;
+        this.raw[1] = y;
+        this.raw[2] = z;
+        this.raw[3] = w;
+    }
 
-	multiply(scalar) {
-		Vector3.multiply(this, scalar, this);
-	}
+    /**
+     * Multiplies this vector by a scalar
+     * @param scalar {number}
+     */
+    multiply(scalar) {
+        Vector3.multiply(this, scalar, this);
+    }
 
-	add(v) {
-		Vector3.add(this, v, this);
-	}
+    /**
+     * Adds the vector passed in to this vector
+     * @param v {Vector3}
+     */
+    add(v) {
+        Vector3.add(this, v, this);
+    }
 
-	subtract(v) {
-		Vector3.subtract(this, v, this);
-	}
+    /**
+     * Subtracts the vector passed in from this vector
+     * @param v {Vector3}
+     */
+    subtract(v) {
+        Vector3.subtract(this, v, this);
+    }
 
-	divide(scalar) {
-		Vector3.divide(this, scalar, this);
-	}
+    /**
+     * Divides this vector by the scalar
+     * @param scalar {Vector3}
+     */
+    divide(scalar) {
+        Vector3.divide(this, scalar, this);
+    }
 
-	negate() {
-		this.raw[0] = -this.raw[0];
-		this.raw[1] = -this.raw[1];
-		this.raw[2] = -this.raw[2];
-	}
+    /**
+     * Inverts this vector
+     */
+    negate() {
+        this.raw[0] = -this.raw[0];
+        this.raw[1] = -this.raw[1];
+        this.raw[2] = -this.raw[2];
+    }
 
-	clamp(limit) {
-		if (this.raw[0] > limit) {
-			this.raw[0] = limit;
-		} else if (this.raw[0] < 0 && this.raw[0] < limit) {
-			this.raw[0] = -limit;
-		}
-		if (this.raw[1] > limit) {
-			this.raw[1] = limit;
-		} else if (this.raw[1] < 0 && this.raw[1] < limit) {
-			this.raw[1] = -limit;
-		}
-		if (this.raw[2] > limit) {
-			this.raw[2] = limit;
-		} else if (this.raw[2] < 0 && this.raw[2] < limit) {
-			this.raw[2] = -limit;
-		}
-	}
+    /**
+     * Clamps the vector components to the limit value
+     * @param limit {number}
+     */
+    clamp(limit) {
+        if (this.raw[0] > limit) {
+            this.raw[0] = limit;
+        } else if (this.raw[0] < 0 && this.raw[0] < limit) {
+            this.raw[0] = -limit;
+        }
+        if (this.raw[1] > limit) {
+            this.raw[1] = limit;
+        } else if (this.raw[1] < 0 && this.raw[1] < limit) {
+            this.raw[1] = -limit;
+        }
+        if (this.raw[2] > limit) {
+            this.raw[2] = limit;
+        } else if (this.raw[2] < 0 && this.raw[2] < limit) {
+            this.raw[2] = -limit;
+        }
+    }
 
-	limit(limit) {
-		if (this.magnitude() > limit) {
-			this.normalize();
-			this.multiply(limit);
-		}
-	}
+    /**
+     * limits the vector magnitude to the limit value
+     * @param limit {number} the maximum magnitude
+     */
+    limit(limit) {
+        if (this.magnitude() > limit) {
+            this.normalize();
+            this.multiply(limit);
+        }
+    }
 
-	rotate(degrees, pivotVector = new Vector3(), stabilize = false) {
-		var mag = this.magnitude();
-		var rads = Convert.DegreesToRadians(degrees);
-		var cosineAngle = Math.cos(rads);
-		var sineAngle = Math.sin(rads);
-		this.raw[0] = (cosineAngle * (this.raw[0] - pivotVector.x)) + (sineAngle * (this.raw[1] - pivotVector.y)) + pivotVector.x;
-		this.raw[1] = (cosineAngle * (this.raw[1] - pivotVector.y)) - (sineAngle * (this.raw[0] - pivotVector.x)) + pivotVector.y;
-		if (stabilize) {
-			this.normalize();
-			this.multiply(mag);
-		}
-	}
+    /**
+     * Rotate this vector
+     * @param degrees {number} degrees to rotate the vector by
+     * @param pivotVector {Vector3} [pivotVector= new Vector3()] The point that you want to rotate around (default 0,0)
+     * @param stabilize {boolean} [stabilize = false] stabilize the rotation of the vector by maintaining it's magnitude
+     */
+    rotate(degrees, pivotVector = new Vector3(), stabilize = false) {
+        var mag = this.magnitude();
+        var rads = Convert.DegreesToRadians(degrees);
+        var cosineAngle = Math.cos(rads);
+        var sineAngle = Math.sin(rads);
+        this.raw[0] = (cosineAngle * (this.raw[0] - pivotVector.x)) + (sineAngle * (this.raw[1] - pivotVector.y)) + pivotVector.x;
+        this.raw[1] = (cosineAngle * (this.raw[1] - pivotVector.y)) - (sineAngle * (this.raw[0] - pivotVector.x)) + pivotVector.y;
+        if (stabilize) {
+            this.normalize();
+            this.multiply(mag);
+        }
+    }
 
-	magnitude() {
-		return Math.sqrt(Vector3.dot(this, this));
-	}
+    /**
+     * The magnitude of this vector
+     * @returns {number}
+     */
+    magnitude() {
+        return Math.sqrt(Vector3.dot(this, this));
+    }
 
-	normalize() {
-		var m = this.magnitude();
-		if (m > 0) {
-			this.divide(m);
-		}
-	}
+    /**
+     * Normalize this vector
+     */
+    normalize() {
+        var m = this.magnitude();
+        if (m > 0) {
+            this.divide(m);
+        }
+    }
 
 }

@@ -52,7 +52,12 @@ export default class Screen {
             Screen._anchorPositions = value;
         }
     }
-
+    static get width () {
+        return Screen._dimensions.x;
+    }
+    static get height () {
+        return Screen._dimensions.y;
+    }
     static resize(e) {
         clearTimeout(resizeId);
         resizeEvent = e;
