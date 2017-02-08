@@ -1,5 +1,11 @@
 # Vexr
 
-This is a simple little 2D vector class I made to goof around with on Codepen. It is unoptimized and I'm not even 100% sure all the math for the vectors is correct. I would recommend that you do not use this in production code without writing some tests. No doubt a more complete vector library is available that has things like unit and performance tests. However, if you want to pick apart some vectors for a learning exercise this can serve as an example without any extra fluff.
+Vexr, a vector library for easy motion and interactivity.
 
-The movers and attractors (attractors are incomplete atm) come from a lecture series by Daniel Shiffman @ http://natureofcode.com/ which I highly recommend.
+Vexr is a work in progress but has the following features.
+
+* 2D and 3D vectors.
+* A game design suite of classes consisting of an Actor class, Game Loop class for updating and rendering your Actors.
+* A lightweight custom events system for easy binding of internal events.
+* Steering behaviors. Easily mix and match them to create new behaviors.
+* Tests!
