@@ -10,14 +10,16 @@ export default class InputController {
 		document.addEventListener("mouseup", this.setMouseUp.bind(this));
 		document.addEventListener("mousedown", this.setMouseDown.bind(this));
 		document.addEventListener("mousemove", this.setMousePos.bind(this));
-		onkeydown = onkeyup = this.mapKeys.bind(this);
+		document.addEventListener("keyup",this.mapKeys.bind(this));
+		document.addEventListener("keydown",this.mapKeys.bind(this));
 	}
 
 	unbindEvents() {
 		document.removeEventListener("mouseup", this.setMouseUp.bind(this));
 		document.removeEventListener("mousedown", this.setMouseDown.bind(this));
 		document.removeEventListener("mousemove", this.setMousePos.bind(this));
-		onkeydown = onkeyup = null;
+		document.removeEventListener("keyup",this.mapKeys.bind(this));
+		document.removeEventListener("keydown",this.mapKeys.bind(this));
 	}
 
 	setMousePos(e) {
