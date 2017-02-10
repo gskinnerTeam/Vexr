@@ -1966,86 +1966,84 @@ var GameLoop = function () {
 }();
 
 var InputController = function () {
-    function InputController() {
-        classCallCheck(this, InputController);
+	function InputController() {
+		classCallCheck(this, InputController);
 
-        this.keyMap = {};
-        this.mousePos = new Vector3();
-    }
+		this.keyMap = {};
+		this.mousePos = new Vector3();
+	}
 
-    createClass(InputController, [{
-        key: "bindEvents",
-        value: function bindEvents() {
-            document.addEventListener("mouseup", this.setMouseUp.bind(this));
-            document.addEventListener("mousedown", this.setMouseDown.bind(this));
-            document.addEventListener("mousemove", this.setMousePos.bind(this));
-            onkeydown = onkeyup = this.mapKeys.bind(this);
-        }
-    }, {
-        key: "unbindEvents",
-        value: function unbindEvents() {
-            document.removeEventListener("mouseup", this.setMouseUp.bind(this));
-            document.removeEventListener("mousedown", this.setMouseDown.bind(this));
-            document.removeEventListener("mousemove", this.setMousePos.bind(this));
-            onkeydown = onkeyup = null;
-        }
-    }, {
-        key: "setMousePos",
-        value: function setMousePos(e) {
-            this.mousePos.set(e.pageX, e.pageY);
-        }
-    }, {
-        key: "setMouseUp",
-        value: function setMouseUp(e) {
-            var fakeKey = {
-                key: "mouse" + e.button,
-                type: "keyup"
-            };
-            this.mapKeys(fakeKey);
-        }
-    }, {
-        key: "setMouseDown",
-        value: function setMouseDown(e) {
-            var fakeKey = {
-                key: "mouse" + e.button,
-                type: "keydown"
-            };
-            this.mapKeys(fakeKey);
-        }
-    }, {
-        key: "mapKeys",
-        value: function mapKeys(e) {
-            e = e || event;
-            this.keyMap[e.key] = e.type == 'keydown';
-        }
-    }, {
-        key: "keyUp",
-        value: function keyUp(key) {
-            console.log(key);
-        }
-    }, {
-        key: "keyDown",
-        value: function keyDown(key) {
-            console.log(key);
-        }
-    }, {
-        key: "setKeys",
-        value: function setKeys() {
-            for (var key in this.keyMap) {
-                if (this.keyMap[key]) {
-                    this.keyDown(key);
-                } else {
-                    this.keyUp(key);
-                }
-            }
-        }
-    }]);
-    return InputController;
+	createClass(InputController, [{
+		key: "bindEvents",
+		value: function bindEvents() {
+			document.addEventListener("mouseup", this.setMouseUp.bind(this));
+			document.addEventListener("mousedown", this.setMouseDown.bind(this));
+			document.addEventListener("mousemove", this.setMousePos.bind(this));
+			document.addEventListener("keyup", this.mapKeys.bind(this));
+			document.addEventListener("keydown", this.mapKeys.bind(this));
+		}
+	}, {
+		key: "unbindEvents",
+		value: function unbindEvents() {
+			document.removeEventListener("mouseup", this.setMouseUp.bind(this));
+			document.removeEventListener("mousedown", this.setMouseDown.bind(this));
+			document.removeEventListener("mousemove", this.setMousePos.bind(this));
+			document.removeEventListener("keyup", this.mapKeys.bind(this));
+			document.removeEventListener("keydown", this.mapKeys.bind(this));
+		}
+	}, {
+		key: "setMousePos",
+		value: function setMousePos(e) {
+			this.mousePos.set(e.pageX, e.pageY);
+		}
+	}, {
+		key: "setMouseUp",
+		value: function setMouseUp(e) {
+			var fakeKey = {
+				key: "mouse" + e.button,
+				type: "keyup"
+			};
+			this.mapKeys(fakeKey);
+		}
+	}, {
+		key: "setMouseDown",
+		value: function setMouseDown(e) {
+			var fakeKey = {
+				key: "mouse" + e.button,
+				type: "keydown"
+			};
+			this.mapKeys(fakeKey);
+		}
+	}, {
+		key: "mapKeys",
+		value: function mapKeys(e) {
+			e = e || event;
+			this.keyMap[e.key] = e.type == 'keydown';
+		}
+	}, {
+		key: "keyUp",
+		value: function keyUp(key) {
+			console.log(key);
+		}
+	}, {
+		key: "keyDown",
+		value: function keyDown(key) {
+			console.log(key);
+		}
+	}, {
+		key: "setKeys",
+		value: function setKeys() {
+			for (var key in this.keyMap) {
+				if (this.keyMap[key]) {
+					this.keyDown(key);
+				} else {
+					this.keyUp(key);
+				}
+			}
+		}
+	}]);
+	return InputController;
 }();
-
-/**
- * Main.js
- */
 
 exports.Vector2 = Vector2;
 exports.Vector3 = Vector3;
