@@ -6,20 +6,20 @@ export default class InputController {
 		this.mousePos = new Vector3();
 	}
 
-	bindEvents() {
-		document.addEventListener("mouseup", this.setMouseUp.bind(this));
-		document.addEventListener("mousedown", this.setMouseDown.bind(this));
-		document.addEventListener("mousemove", this.setMousePos.bind(this));
-		document.addEventListener("keyup",this.mapKeys.bind(this));
-		document.addEventListener("keydown",this.mapKeys.bind(this));
+	bindEvents(target = document) {
+		target.addEventListener("mouseup", this.setMouseUp.bind(this));
+		target.addEventListener("mousedown", this.setMouseDown.bind(this));
+		target.addEventListener("mousemove", this.setMousePos.bind(this));
+		target.addEventListener("keyup",this.mapKeys.bind(this));
+		target.addEventListener("keydown",this.mapKeys.bind(this));
 	}
 
 	unbindEvents() {
-		document.removeEventListener("mouseup", this.setMouseUp.bind(this));
-		document.removeEventListener("mousedown", this.setMouseDown.bind(this));
-		document.removeEventListener("mousemove", this.setMousePos.bind(this));
-		document.removeEventListener("keyup",this.mapKeys.bind(this));
-		document.removeEventListener("keydown",this.mapKeys.bind(this));
+		target.removeEventListener("mouseup", this.setMouseUp.bind(this));
+		target.removeEventListener("mousedown", this.setMouseDown.bind(this));
+		target.removeEventListener("mousemove", this.setMousePos.bind(this));
+		target.removeEventListener("keyup",this.mapKeys.bind(this));
+		target.removeEventListener("keydown",this.mapKeys.bind(this));
 	}
 
 	setMousePos(e) {
