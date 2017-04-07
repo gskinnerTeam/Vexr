@@ -1149,7 +1149,6 @@ var Generate = function () {
 
 var pools = new Object();
 var objectPool = new Object();
-var usagePool = new Object();
 var clean = new Object();
 
 var Pool = function () {
@@ -1159,30 +1158,19 @@ var Pool = function () {
 
     createClass(Pool, null, [{
         key: "allocate",
-        value: function allocate(object, objectKey, number) {
-            var cleaner = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : function (item) {
+        value: function allocate(object, objectKey) {
+            var cleaner = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : function (item) {
                 return item;
             };
-
 
             if (object.hasOwnProperty("prototype")) {
                 pools[objectKey] = {
                     object: object,
                     objectKey: objectKey,
-                    amount: number,
                     cleaner: cleaner
                 };
                 clean[objectKey] = cleaner;
-                usagePool[objectKey] = [];
                 objectPool[objectKey] = [];
-                for (var i = 0; i < number; i++) {
-                    var instance = new object();
-                    instance.v_pool_index = i;
-                    instance.v_pool_key = objectKey;
-                    usagePool[objectKey][i] = false;
-                    objectPool[objectKey][i] = instance;
-                }
-                return objectPool[objectKey];
             } else {
                 throw new Error("Object must have a constructor");
             }
@@ -1190,61 +1178,36 @@ var Pool = function () {
     }, {
         key: "deallocate",
         value: function deallocate(objectKey) {
-            var force = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
-            if (Pool.referencesInPool(objectKey) == 0 || force == true) {
-                delete clean[objectKey];
-                delete usagePool[objectKey];
-                delete objectPool[objectKey];
-                delete pools[objectKey];
-            } else {
-                console.warn("You still have objects in this pool checked out. Return them and call deallocate. Or use deallocate(key, true) to force deallocation.");
-            }
+            delete clean[objectKey];
+            delete objectPool[objectKey];
+            delete pools[objectKey];
         }
     }, {
         key: "referencesInPool",
         value: function referencesInPool(objectKey) {
-            return pools[objectKey].amount - Pool.poolsize(objectKey);
+            return pools[objectKey].size - Pool.poolsize(objectKey);
         }
     }, {
         key: "poolsize",
         value: function poolsize(objectKey) {
-            return objectPool[objectKey].filter(Pool.notInUse).length;
-        }
-    }, {
-        key: "inUse",
-        value: function inUse(object) {
-            return usagePool[object.v_pool_key][object.v_pool_index];
-        }
-    }, {
-        key: "notInUse",
-        value: function notInUse(object) {
-            return !usagePool[object.v_pool_key][object.v_pool_index];
-        }
-    }, {
-        key: "returnAll",
-        value: function returnAll(objectKey) {
-            var objects = objectPool[objectKey].filter(Pool.inUse);
-            for (var i = 0; i < objects.length; i++) {
-                Pool.returnObject(objects[i]);
-            }
+            return objectPool[objectKey].length;
         }
     }, {
         key: "getObject",
         value: function getObject(objectKey) {
-            var i = usagePool[objectKey].indexOf(false);
-            usagePool[objectKey][i] = true;
-            if (i > -1) {
-                return objectPool[objectKey][i];
+            if (objectPool[objectKey].length > 0) {
+                return objectPool[objectKey].pop();
             } else {
-                throw new Error("Out of objects");
+                var obj = new pools[objectKey].object();
+                obj.v_pool_key = objectKey;
+                return obj;
             }
         }
     }, {
         key: "returnObject",
         value: function returnObject(obj) {
             clean[obj.v_pool_key](obj);
-            usagePool[obj.v_pool_key][obj.v_pool_index] = false;
+            objectPool[obj.v_pool_key].push(obj);
         }
     }, {
         key: "returnObjects",
@@ -1254,7 +1217,7 @@ var Pool = function () {
             }
         }
     }, {
-        key: "Pools",
+        key: "pools",
         get: function get() {
             return pools;
         }
@@ -1487,7 +1450,7 @@ var Behavior = function () {
          * init is a static method that is used to initialize the object pool
          */
         value: function init() {
-            Pool.allocate(Vector3, key, 10, Vector3.reset);
+            Pool.allocate(Vector3, key, Vector3.reset);
         }
 
         /**
@@ -1976,20 +1939,22 @@ var InputController = function () {
 	createClass(InputController, [{
 		key: "bindEvents",
 		value: function bindEvents() {
-			document.addEventListener("mouseup", this.setMouseUp.bind(this));
-			document.addEventListener("mousedown", this.setMouseDown.bind(this));
-			document.addEventListener("mousemove", this.setMousePos.bind(this));
-			document.addEventListener("keyup", this.mapKeys.bind(this));
-			document.addEventListener("keydown", this.mapKeys.bind(this));
+			var target = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : document;
+
+			target.addEventListener("mouseup", this.setMouseUp.bind(this));
+			target.addEventListener("mousedown", this.setMouseDown.bind(this));
+			target.addEventListener("mousemove", this.setMousePos.bind(this));
+			target.addEventListener("keyup", this.mapKeys.bind(this));
+			target.addEventListener("keydown", this.mapKeys.bind(this));
 		}
 	}, {
 		key: "unbindEvents",
 		value: function unbindEvents() {
-			document.removeEventListener("mouseup", this.setMouseUp.bind(this));
-			document.removeEventListener("mousedown", this.setMouseDown.bind(this));
-			document.removeEventListener("mousemove", this.setMousePos.bind(this));
-			document.removeEventListener("keyup", this.mapKeys.bind(this));
-			document.removeEventListener("keydown", this.mapKeys.bind(this));
+			target.removeEventListener("mouseup", this.setMouseUp.bind(this));
+			target.removeEventListener("mousedown", this.setMouseDown.bind(this));
+			target.removeEventListener("mousemove", this.setMousePos.bind(this));
+			target.removeEventListener("keyup", this.mapKeys.bind(this));
+			target.removeEventListener("keydown", this.mapKeys.bind(this));
 		}
 	}, {
 		key: "setMousePos",
