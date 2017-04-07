@@ -14,7 +14,7 @@ export default class Behavior {
      * init is a static method that is used to initialize the object pool
      */
     static init() {
-        Pool.allocate(Vector3, key, 10, Vector3.reset);
+		Pool.allocate(Vector3, key, Vector3.reset);
     }
 
     /**
