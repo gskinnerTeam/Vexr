@@ -74,12 +74,16 @@ export default class Vector3 {
      * @static
      */
     static add(a, b, v = new Vector3()) {
-        v.set(a.raw[0] + b.raw[0], a.raw[1] + b.raw[1], a.raw[2] + b.raw[2]);
+        v.raw[0] = a.raw[0] + b.raw[0];
+		v.raw[1] = a.raw[1] + b.raw[1];
+		v.raw[2] = a.raw[2] + b.raw[2];
         return v;
     }
 
     static subtract(a, b, v = new Vector3()) {
-        v.set(a.raw[0] - b.raw[0], a.raw[1] - b.raw[1], a.raw[2] - b.raw[2]);
+		v.raw[0] = a.raw[0] - b.raw[0];
+		v.raw[1] = a.raw[1] - b.raw[1];
+		v.raw[2] = a.raw[2] - b.raw[2];
         return v;
     }
 
@@ -92,7 +96,9 @@ export default class Vector3 {
      * @static
      */
     static multiply(a, scalar, v = new Vector3()) {
-        v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
+		v.raw[0] = a.raw[0] * scalar;
+		v.raw[1] = a.raw[1] * scalar;
+		v.raw[2] = a.raw[2] * scalar;
         return v;
     }
 
@@ -106,7 +112,9 @@ export default class Vector3 {
      */
     static divide(a, scalar, v = new Vector3()) {
         scalar = 1 / scalar;
-        v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
+		v.raw[0] = a.raw[0] * scalar;
+		v.raw[1] = a.raw[1] * scalar;
+		v.raw[2] = a.raw[2] * scalar;
         return v;
     }
 
@@ -129,10 +137,9 @@ export default class Vector3 {
      * @returns {Vector3}
      */
     static cross(a, b, v = new Vector3()) {
-        v.set(
-            a.raw[1] * b.raw[2] - b.raw[1] * a.raw[2],
-            a.raw[2] * b.raw[0] - b.raw[2] * a.raw[0],
-            a.raw[0] * b.raw[1] - b.raw[0] * a.raw[1]);
+        a.raw[0] = a.raw[1] * b.raw[2] - b.raw[1] * a.raw[2];
+		a.raw[1] = a.raw[2] * b.raw[0] - b.raw[2] * a.raw[0];
+		a.raw[2] = a.raw[0] * b.raw[1] - b.raw[0] * a.raw[1];
         return v;
     }
 
