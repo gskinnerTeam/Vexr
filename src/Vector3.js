@@ -308,8 +308,10 @@ export default class Vector3 {
      * @param pivotVector {Vector3} [pivotVector= new Vector3()] The point that you want to rotate around (default 0,0)
      * @param stabilize {boolean} [stabilize = false] stabilize the rotation of the vector by maintaining it's magnitude
      */
-    rotate(degrees, pivotVector = new Vector3(), stabilize = false) {
-        var mag = this.magnitude();
+    rotate(degrees, pivotVector = Vector3.zero, stabilize = false) {
+		if (stabilize) {
+			var mag = this.magnitude();
+		}
         var rads = Convert.DegreesToRadians(degrees);
         var cosineAngle = Math.cos(rads);
         var sineAngle = Math.sin(rads);
@@ -340,3 +342,4 @@ export default class Vector3 {
     }
 
 }
+Vector3.zero = new Vector3();
