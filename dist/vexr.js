@@ -572,7 +572,9 @@ var Vector3 = function () {
         value: function add(a, b) {
             var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
 
-            v.set(a.raw[0] + b.raw[0], a.raw[1] + b.raw[1], a.raw[2] + b.raw[2]);
+            v.raw[0] = a.raw[0] + b.raw[0];
+            v.raw[1] = a.raw[1] + b.raw[1];
+            v.raw[2] = a.raw[2] + b.raw[2];
             return v;
         }
     }, {
@@ -580,7 +582,9 @@ var Vector3 = function () {
         value: function subtract(a, b) {
             var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
 
-            v.set(a.raw[0] - b.raw[0], a.raw[1] - b.raw[1], a.raw[2] - b.raw[2]);
+            v.raw[0] = a.raw[0] - b.raw[0];
+            v.raw[1] = a.raw[1] - b.raw[1];
+            v.raw[2] = a.raw[2] - b.raw[2];
             return v;
         }
 
@@ -598,7 +602,9 @@ var Vector3 = function () {
         value: function multiply(a, scalar) {
             var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
 
-            v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
+            v.raw[0] = a.raw[0] * scalar;
+            v.raw[1] = a.raw[1] * scalar;
+            v.raw[2] = a.raw[2] * scalar;
             return v;
         }
 
@@ -617,7 +623,9 @@ var Vector3 = function () {
             var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
 
             scalar = 1 / scalar;
-            v.set(a.raw[0] * scalar, a.raw[1] * scalar, a.raw[2] * scalar);
+            v.raw[0] = a.raw[0] * scalar;
+            v.raw[1] = a.raw[1] * scalar;
+            v.raw[2] = a.raw[2] * scalar;
             return v;
         }
 
@@ -648,7 +656,9 @@ var Vector3 = function () {
         value: function cross(a, b) {
             var v = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : new Vector3();
 
-            v.set(a.raw[1] * b.raw[2] - b.raw[1] * a.raw[2], a.raw[2] * b.raw[0] - b.raw[2] * a.raw[0], a.raw[0] * b.raw[1] - b.raw[0] * a.raw[1]);
+            a.raw[0] = a.raw[1] * b.raw[2] - b.raw[1] * a.raw[2];
+            a.raw[1] = a.raw[2] * b.raw[0] - b.raw[2] * a.raw[0];
+            a.raw[2] = a.raw[0] * b.raw[1] - b.raw[0] * a.raw[1];
             return v;
         }
 
@@ -836,10 +846,12 @@ var Vector3 = function () {
     }, {
         key: "rotate",
         value: function rotate(degrees) {
-            var pivotVector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : new Vector3();
+            var pivotVector = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : Vector3.zero;
             var stabilize = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
 
-            var mag = this.magnitude();
+            if (stabilize) {
+                var mag = this.magnitude();
+            }
             var rads = Convert.DegreesToRadians(degrees);
             var cosineAngle = Math.cos(rads);
             var sineAngle = Math.sin(rads);
@@ -909,6 +921,8 @@ var Vector3 = function () {
     }]);
     return Vector3;
 }();
+
+Vector3.zero = new Vector3();
 
 var Matrix3 = function () {
 	function Matrix3() {
@@ -1286,8 +1300,20 @@ var EventLite = function () {
     return EventLite;
 }();
 
-var resizeId;
-var resizeEvent;
+var resizeId = void 0;
+var resizeEvent = void 0;
+
+/**
+ * Screen is a bunch of helper functions to give you control over where you want things to go on the screen using Vectors
+ *
+ * When setting the anchor you do it as an expression of the ratio of where you want to show up on the screen.
+ * For example 0.5, 0.5 would give you the center of the screen
+ *
+ * Set an anchor point by calling setAnchor("PinnedLeftCenter", 0, 0.5);
+ *
+ * If you want to know the absolute position of an anchor on the screen, pass the key for your anchor to Screen.getAnchor("PinnedLeftCenter");
+ *
+ */
 
 var Screen = function () {
     function Screen() {
@@ -1296,11 +1322,22 @@ var Screen = function () {
 
     createClass(Screen, null, [{
         key: "resize",
+
+
+        /**
+            * The function called on resize that buffers the event to resize
+         * @param e {event}
+         */
         value: function resize(e) {
             clearTimeout(resizeId);
             resizeEvent = e;
             resizeId = setTimeout(Screen.recalculate, Screen.resizeDelay);
         }
+
+        /**
+            * Loops through all the anchors and properties and updates their real coordinates
+         */
+
     }, {
         key: "recalculate",
         value: function recalculate() {
@@ -1318,11 +1355,25 @@ var Screen = function () {
 
             EventLite.trigger("resize", resizeEvent);
         }
+
+        /**
+            * Returns a vector for your anchor point at it's real position on screen
+         * @param name {string}
+         */
+
     }, {
         key: "getAnchor",
         value: function getAnchor(name) {
             return Screen.anchorPositions[name].get();
         }
+
+        /**
+            * Sets an anchor point at the provided ratio
+         * @param name {string}
+         * @param ratioX {number}
+         * @param ratioY {number}
+         */
+
     }, {
         key: "setAnchor",
         value: function setAnchor(name, ratioX, ratioY) {
@@ -1335,12 +1386,23 @@ var Screen = function () {
                 Screen.anchorPositions[name].set(Screen.anchors[name].x * Screen.dimensions.x, Screen.anchors[name].y * Screen.dimensions.y);
             }
         }
+
+        /**
+            * Deletes an anchor
+         * @param name
+         */
+
     }, {
         key: "removeAnchor",
         value: function removeAnchor(name) {
             delete Screen.anchors[name];
             delete Screen.anchorPositions[name];
         }
+
+        /**
+            * Initializes the static class (ES6 no static property workaround)
+         */
+
     }, {
         key: "init",
         value: function init() {
@@ -1357,69 +1419,148 @@ var Screen = function () {
         }
     }, {
         key: "dimensions",
+
+        /**
+            * Returns the screen dimensions as a vector x = width, y = height
+         * @returns {Vector3}
+         */
         get: function get() {
             return Screen._dimensions;
-        },
+        }
+
+        /**
+            * Sets the screen dimensions as a vector x = width, y = height
+         * @param value {Vector3}
+         */
+        ,
         set: function set(value) {
             if (Screen._dimensions != value) {
                 Screen._dimensions = value;
             }
         }
+        /**
+            * Returns the screen dimensions as an orientation value. "portrait" or "landscape"
+         * @returns {string}
+         */
+
     }, {
         key: "orientation",
         get: function get() {
             return Screen._orientation;
-        },
+        }
+        /**
+         * sets the screen dimensions as an orientation value.
+         * @param value {string}
+         */
+        ,
         set: function set(value) {
             if (Screen._orientation != value) {
                 Screen._orientation = value;
             }
         }
+
+        /**
+            * Retures a vector at the center of the screen
+         * @returns {Vector3}
+         */
+
     }, {
         key: "center",
         get: function get() {
             return Screen._center;
-        },
+        }
+        /**
+         * sets a vector at the center of the screen
+         * @param value {Vector3}
+         */
+        ,
         set: function set(value) {
             if (Screen._center != value) {
                 Screen._center = value;
             }
         }
+
+        /**
+            * The debounce value for the resize
+         * @returns {number}
+         */
+
     }, {
         key: "resizeDelay",
         get: function get() {
             return Screen._resizeDelay;
-        },
+        }
+
+        /**
+            * The debounce value for the resize
+         * @param value {number}
+         */
+        ,
         set: function set(value) {
             if (Screen._resizeDelay != value) {
                 Screen._resizeDelay = value;
             }
         }
+
+        /**
+            * returns all the screen anchors
+         * @returns {Array}
+         */
+
     }, {
         key: "anchors",
         get: function get() {
             return Screen._anchors;
-        },
+        }
+
+        /**
+            * sets all the screen anchors
+         * @param value {Array}
+         */
+        ,
         set: function set(value) {
             if (Screen._anchors != value) {
                 Screen._anchors = value;
             }
         }
+
+        /**
+            * Returns all the anchor positions
+         * @returns {Array}
+         */
+
     }, {
         key: "anchorPositions",
         get: function get() {
             return Screen._anchorPositions;
-        },
+        }
+
+        /**
+            * Sets all the anchor positions
+         * @param value {Array}
+         */
+        ,
         set: function set(value) {
             if (Screen._anchorPositions != value) {
                 Screen._anchorPositions = value;
             }
         }
+
+        /**
+            * static getter for width
+         * @returns {number}
+         */
+
     }, {
         key: "width",
         get: function get() {
             return Screen._dimensions.x;
         }
+        /**
+         * static getter for width
+         * @returns {number}
+         */
+
     }, {
         key: "height",
         get: function get() {
