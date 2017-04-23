@@ -83,5 +83,13 @@ gulp.task("karma", function (done) {
 });
 
 
+var jsdoc = require('gulp-jsdoc3');
+
+gulp.task('docs', function (cb) {
+	var config = require('./jsdoc.json');
+	gulp.src(['README.md', './src/**/*.js'], {read: false})
+		.pipe(jsdoc(config, cb));
+});
+
 gulp.task("build", gulp.parallel("bundle:es6", "bundle:cjs", "bundle:global" ));
 gulp.task("test", gulp.series("bundle:global", gulp.parallel("watch", "karma")));

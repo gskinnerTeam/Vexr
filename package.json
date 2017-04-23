@@ -35,6 +35,7 @@
     "babel-preset-es2015": "^6.14.0",
     "chai": "^3.5.0",
     "gulp": "gulpjs/gulp#4.0",
+    "gulp-jsdoc3": "^1.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-sourcemaps": "1.7.x",
     "gulp-uglify": "^2.0.0",
