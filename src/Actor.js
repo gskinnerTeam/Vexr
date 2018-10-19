@@ -37,11 +37,11 @@ export default class Actor {
     /**
      * update() will check to see if this actor is active, then call move(), then add the acceleration to the velocity, the velocity to the location, then reset the acceleration.
      */
-    update() {
+    update(dt) {
         if (this.active) {
             this.move();
-            this.velocity.add(this.acceleration);
-            this.location.add(this.velocity);
+            this.velocity.add(Vector3.multiply(this.acceleration, dt));
+            this.location.add(Vector3.multoply(this.velocity, dt));
             this.acceleration.set(0, 0, 0);
         }
     }

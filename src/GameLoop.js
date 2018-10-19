@@ -2,6 +2,9 @@ export default class GameLoop {
 	constructor() {
 		this.gameObjects = [];
 		this.controller = [];
+		this.start = Date.now();
+		this.deltaTime = 0;
+		this.lastTime = 0;
 	}
 
 	setController(inputController) {
@@ -44,7 +47,10 @@ export default class GameLoop {
 	}
 
 	loop() {
-		this.update();
+		let time = Date.now() - this.start();
+		this.deltaTime = time - this.lastTime;
+		this.lastTime = time;
+		this.update(this.deltaTime);
 		this.render();
 		window.requestAnimationFrame(this.loop.bind(this));
 	}
